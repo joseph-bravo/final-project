@@ -16,6 +16,12 @@ app.get('/api/hello', (req, res) => {
   res.json({ hello: 'world' });
 });
 
+app.use((req, res) => {
+  res.sendFile('/index.html', {
+    root: path.join(__dirname, 'public')
+  });
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
