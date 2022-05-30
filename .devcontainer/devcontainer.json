@@ -5,8 +5,10 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "thebearingedge.lfz-code"
-      ]
+		"thebearingedge.lfz-code",
+		"bradlc.vscode-tailwindcss",
+		"esbenp.prettier-vscode"
+	]
     }
   },
   "postCreateCommand": "[ -f package-lock.json ] && npm ci",
