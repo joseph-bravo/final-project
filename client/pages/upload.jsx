@@ -13,12 +13,16 @@ export default class Upload extends React.Component {
       tags: '',
       isErrorAlertOpen: false
     };
+
+    this.imageRef = React.createRef();
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.closeAlert = this.closeAlert.bind(this);
     this.fileLoad = this.fileLoad.bind(this);
     this.handleDrop = this.handleDrop.bind(this);
+    this.checkFormValues = this.checkFormValues.bind(this);
   }
 
   componentDidMount() {
@@ -45,8 +49,33 @@ export default class Upload extends React.Component {
     window.removeEventListener('dragover', this.cancelDefaults);
   }
 
+  // prettier-ignore
   handleSubmit(event) {
     event.preventDefault();
+    console.log('submitting');
+    const imageSrc = this.imageRef.current.state.imageSrc;
+    fetch(imageSrc)
+      .then(res => res.blob())
+      .then(thumbnailBlob => {
+        const formData = new FormData();
+
+        formData.append('title', this.state.title);
+        formData.append('description', this.state.description);
+        formData.append('tags', this.state.tags);
+        formData.append('filePropsSound', this.state.fileParsed.soundEffect);
+        formData.append('filePropsLayerCount', this.state.fileParsed.layerCount);
+        formData.append('filePropsName', this.state.fileParsed.name);
+        formData.append('sar', this.state.file);
+        formData.append('thumbnail', thumbnailBlob, 'thumbnail.png');
+
+        return fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+      })
+      .then(res => res.json())
+      .then(console.log)
+      .catch(console.error);
   }
 
   handleFileChange(event) {
@@ -78,9 +107,15 @@ export default class Upload extends React.Component {
     this.setState({ isErrorAlertOpen: false });
   }
 
+  checkFormValues() {
+    const { file, title, description } = this.state;
+    if (!file || !title || !description) return false;
+    return true;
+  }
+
   render() {
     return (
-      <form onSubmit={e => e.preventDefault()} className="flex flex-col gap-4 ">
+      <form onSubmit={this.handleSubmit} className="flex flex-col gap-4 ">
         <div className="rounded-box flex justify-center bg-base-100 p-2">
           <label htmlFor="fileInput" className="btn btn-secondary btn-block">
             Upload .sar File
@@ -109,7 +144,7 @@ export default class Upload extends React.Component {
                 <>
                 <div className='rounded-box p-4 bg-base-100 prose min-w-full'>
                   <h3>preview</h3>
-                  <SarRenderToPng sar={this.state.fileParsed} />
+                  <SarRenderToPng ref={this.imageRef} sar={this.state.fileParsed} />
                 </div>
                 <div className="rounded-box flex flex-col gap-4 bg-base-100 py-4">
                   <TextInput
@@ -117,12 +152,14 @@ export default class Upload extends React.Component {
                     name="title"
                     value={this.state.title}
                     handleChange={this.handleChange}
+                    required={true}
                   />
                   <TextInput
                     label="description"
                     name="description"
                     value={this.state.description}
                     handleChange={this.handleChange}
+                    required={true}
                   />
                   <TextInput
                     label="tags"
@@ -130,6 +167,12 @@ export default class Upload extends React.Component {
                     value={this.state.tags}
                     handleChange={this.handleChange}
                   />
+                </div>
+
+                <div className="rounded-box flex justify-center bg-base-100 p-2">
+                  <button type="submit" className="btn btn-success btn-block">
+                    Submit
+                  </button>
                 </div>
                 </>
               )
@@ -152,6 +195,7 @@ function TextInput(props) {
         name={props.name}
         value={props.value}
         onChange={props.handleChange}
+        required={props.required}
       />
     </div>
   );

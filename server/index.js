@@ -1,10 +1,20 @@
 require('dotenv/config');
 const path = require('path');
 const express = require('express');
+const pg = require('pg');
 const errorMiddleware = require('./error-middleware');
+const upload = require('./uploades-middleware');
+const { randomUUID } = require('crypto');
 
 const app = express();
 const publicPath = path.join(__dirname, 'public');
+
+const db = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 if (process.env.NODE_ENV === 'development') {
   app.use(require('./dev-middleware')(publicPath));
@@ -12,9 +22,34 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.static(publicPath));
 
-app.get('/api/hello', (req, res) => {
-  res.json({ hello: 'world' });
-});
+/**
+ * ? Handle uploads from forms on the path '/api/upload'
+ */
+app.post(
+  '/api/upload',
+  (req, res, next) => {
+    req.fileName = randomUUID();
+    next();
+  },
+  upload.fields([
+    { name: 'sar', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+  ]),
+  (req, res, next) => {
+    const { sar, thumbnail } = req.files;
+    const paths = {
+      sar: sar[0].location,
+      thumbnail: thumbnail[0].location
+    };
+    console.log(req.body);
+    const { title, description, tags } = req.body;
+    const sql = `/* SQL */
+      insert into "files"
+        ("filePath", "thumbnailPath", )
+    `;
+    res.json(paths);
+  }
+);
 
 app.use((req, res) => {
   res.sendFile('/index.html', {
