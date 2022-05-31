@@ -5,8 +5,8 @@ export default class Header extends React.Component {
     return (
       <header
         className="navbar rounded-box sticky
-        top-4 mx-auto mb-6 flex w-11/12 max-w-3xl items-center
-        justify-between bg-primary px-4 text-primary-content">
+        top-4 mx-auto mb-8 flex w-11/12 max-w-3xl items-center
+        justify-between bg-primary px-4 text-primary-content shadow-md">
         <div className="">
           <button className="btn btn-primary">
             <span className="material-icons">arrow_back</span>
