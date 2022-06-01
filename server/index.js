@@ -3,17 +3,14 @@ const path = require('path');
 const express = require('express');
 const pg = require('pg');
 const errorMiddleware = require('./error-middleware');
-const upload = require('./uploades-middleware');
+const upload = require('./uploader-middleware');
 const { randomUUID } = require('crypto');
 
 const app = express();
 const publicPath = path.join(__dirname, 'public');
 
 const db = new pg.Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: process.env.DATABASE_URL
 });
 
 if (process.env.NODE_ENV === 'development') {
@@ -41,13 +38,70 @@ app.post(
       sar: sar[0].location,
       thumbnail: thumbnail[0].location
     };
-    console.log(req.body);
-    const { title, description, tags } = req.body;
+
+    const {
+      title,
+      description,
+      tags: rawTags,
+      filePropsSound,
+      filePropsLayerCount,
+      filePropsName
+    } = req.body;
+
+    const tags = rawTags.split(',').map(e => e.trim());
+
     const sql = `/* SQL */
-      insert into "files"
-        ("filePath", "thumbnailPath", )
+      with "new_file" as (
+        insert into "files"
+          ("filePath", "thumbnailPath",
+          "filePropsSound", "filePropsName",
+          "filePropsLayerCount")
+        values
+          ($1, $2, $3, $4, $5)
+        returning
+          *
+      ), "new_post" as (
+        insert into
+          "posts" ("fileId", "userId", "title", "description")
+        select "fileId",
+              1,
+              $6,
+              $7
+          from "new_file"
+        returning *
+      ), "upsert_tags" as (
+        insert into "tags" ("tagName")
+        select * from unnest($8::text[])
+        on conflict ("tagName")
+        do nothing
+      ), "add_taggings" as (
+        insert into "taggings" ("postId", "tagName")
+        select "postId",
+                unnest($8::text[]) as "tagName"
+                from "new_post"
+        returning *
+      )
+      select * from "new_post"
+      join "new_file" using ("fileId")
     `;
-    res.json(paths);
+
+    const params = [
+      paths.sar,
+      paths.thumbnail,
+      filePropsSound,
+      filePropsName,
+      filePropsLayerCount,
+      title,
+      description,
+      tags
+    ];
+    // prettier-ignore
+    db
+      .query(sql, params)
+      .then(reSQL => {
+        console.log(reSQL);
+        res.json(reSQL);
+      });
   }
 );
 

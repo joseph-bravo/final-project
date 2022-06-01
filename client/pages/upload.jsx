@@ -23,6 +23,7 @@ export default class Upload extends React.Component {
     this.fileLoad = this.fileLoad.bind(this);
     this.handleDrop = this.handleDrop.bind(this);
     this.checkFormValues = this.checkFormValues.bind(this);
+    this.resetForm = this.resetForm.bind(this);
   }
 
   componentDidMount() {
@@ -43,6 +44,17 @@ export default class Upload extends React.Component {
     this.fileLoad(file);
   }
 
+  resetForm() {
+    this.setState({
+      file: null,
+      fileParsed: null,
+      title: '',
+      description: '',
+      tags: '',
+      isErrorAlertOpen: false
+    });
+  }
+
   componentWillUnmount() {
     window.removeEventListener('drop', this.handleDrop);
     window.removeEventListener('dragenter', this.cancelDefaults);
@@ -52,19 +64,19 @@ export default class Upload extends React.Component {
   // prettier-ignore
   handleSubmit(event) {
     event.preventDefault();
-    console.log('submitting');
     const imageSrc = this.imageRef.current.state.imageSrc;
     fetch(imageSrc)
       .then(res => res.blob())
       .then(thumbnailBlob => {
         const formData = new FormData();
+        const { soundEffect, layerCount, name } = this.state.fileParsed;
 
         formData.append('title', this.state.title);
         formData.append('description', this.state.description);
         formData.append('tags', this.state.tags);
-        formData.append('filePropsSound', this.state.fileParsed.soundEffect);
-        formData.append('filePropsLayerCount', this.state.fileParsed.layerCount);
-        formData.append('filePropsName', this.state.fileParsed.name);
+        formData.append('filePropsSound', soundEffect);
+        formData.append('filePropsLayerCount', layerCount);
+        formData.append('filePropsName', name);
         formData.append('sar', this.state.file);
         formData.append('thumbnail', thumbnailBlob, 'thumbnail.png');
 
@@ -74,7 +86,10 @@ export default class Upload extends React.Component {
         });
       })
       .then(res => res.json())
-      .then(console.log)
+      .then(resJson => {
+        console.log(resJson);
+        this.resetForm();
+      })
       .catch(console.error);
   }
 

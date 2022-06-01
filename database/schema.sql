@@ -10,7 +10,7 @@ create table "posts" (
   "postId" serial primary key not null,
   "fileId" integer not null,
   "userId" integer,
-  "createdAt" timestamptz,
+  "createdAt" timestamptz default now() not null,
   "title" text,
   "description" text
 );
@@ -18,7 +18,7 @@ create table "posts" (
 create table "files" (
   "fileId" serial primary key not null,
   "filePath" text not null,
-  "thumnbnailPath" text not null,
+  "thumbnailPath" text not null,
   "filePropsSound" text,
   "filePropsName" text,
   "filePropsLayerCount" integer
@@ -26,17 +26,17 @@ create table "files" (
 
 create table "users" (
   "userId" serial unique primary key not null,
-  "hashedPassword" text unique not null,
-  "createdAt" timestamptz
+  "hashedPassword" text not null,
+  "username" text unique not null,
+  "createdAt" timestamptz default now() not null
 );
 
 create table "tags" (
-  "tagId" serial primary key not null,
-  "name" text
+  "tagName" text primary key not null
 );
 
 create table "taggings" (
-  "tagId" integer,
+  "tagName" text,
   "postId" integer
 );
 
@@ -47,7 +47,7 @@ alter table "posts"
   add foreign key ("userId") references "users" ("userId");
 
 alter table "taggings"
-  add foreign key ("tagId") references "tags" ("tagId");
+  add foreign key ("tagName") references "tags" ("tagName");
 
 alter table "taggings"
   add foreign key ("postId") references "posts" ("postId");
