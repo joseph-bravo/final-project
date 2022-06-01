@@ -3,6 +3,7 @@ import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
 
 const descriptionCharLimit = 90;
+const titleCharLimit = 25;
 
 export default class Upload extends React.Component {
   constructor(props) {
@@ -123,6 +124,11 @@ export default class Upload extends React.Component {
         return;
       }
     }
+    if (event.target.name === 'title') {
+      if (event.target.value.length > titleCharLimit) {
+        return;
+      }
+    }
     if (event.target.name === 'tags') {
       event.target.value = event.target.value.toLowerCase();
     }
@@ -140,8 +146,9 @@ export default class Upload extends React.Component {
   }
 
   render() {
-    const remainingCharacters =
+    const descriptionRemainingChars =
       descriptionCharLimit - this.state.description.length;
+    const titleRemainingChars = titleCharLimit - this.state.title.length;
 
     return (
       <form onSubmit={this.handleSubmit} className="flex flex-col gap-4 ">
@@ -183,7 +190,9 @@ export default class Upload extends React.Component {
                     value={this.state.title}
                     handleChange={this.handleChange}
                     required={true}
-                    placeholder='enter name of post...'
+                    remainingCharacters={titleRemainingChars}
+                    totalCharacters={titleCharLimit}
+                    placeholder={`required: enter name of post (max ${titleCharLimit} characters)...`}
                   />
 
                   <TextInput
@@ -191,8 +200,8 @@ export default class Upload extends React.Component {
                     name="description"
                     value={this.state.description}
                     handleChange={this.handleChange}
-                    required={true}
-                    remainingCharacters={remainingCharacters}
+                    remainingCharacters={descriptionRemainingChars}
+                    totalCharacters={descriptionCharLimit}
                     placeholder={`enter description (max ${descriptionCharLimit} characters)...`}
                   />
 
@@ -221,7 +230,7 @@ export default class Upload extends React.Component {
 }
 
 function TextInput(props) {
-  const remainingCharacters = props.remainingCharacters;
+  const { remainingCharacters, totalCharacters } = props;
   return (
     <div className="form-control flex flex-col gap-3 px-4">
       <label className="flex items-center">
@@ -234,7 +243,7 @@ function TextInput(props) {
                 className={`radial-progress radial-progress-label
                 ${remainingCharacters ? 'text-success' : 'text-error'}`}
             style={{
-              '--value': (remainingCharacters / descriptionCharLimit) * 100
+              '--value': (remainingCharacters / totalCharacters) * 100
             }}>
             {remainingCharacters}
           </div>

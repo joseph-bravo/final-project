@@ -9,9 +9,9 @@ create schema "public";
 create table "posts" (
   "postId" serial primary key not null,
   "fileId" integer not null,
-  "userId" integer,
+  "userId" integer not null,
   "createdAt" timestamptz default now() not null,
-  "title" text,
+  "title" text not null,
   "description" text
 );
 
@@ -36,8 +36,8 @@ create table "tags" (
 );
 
 create table "taggings" (
-  "tagName" text,
-  "postId" integer
+  "tagName" text not null,
+  "postId" integer not null
 );
 
 alter table "posts"
