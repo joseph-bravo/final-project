@@ -10,7 +10,10 @@ const app = express();
 const publicPath = path.join(__dirname, 'public');
 
 const db = new pg.Pool({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 if (process.env.NODE_ENV === 'development') {
