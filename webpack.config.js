@@ -28,9 +28,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              '@babel/preset-env'
-            ],
+            presets: ['@babel/preset-env'],
             plugins: [
               '@babel/plugin-transform-react-jsx',
               isDevelopment && 'react-refresh/babel'
@@ -42,7 +40,18 @@ module.exports = {
         test: /\.css$/,
         use: [
           'style-loader',
-          'css-loader'
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: {
+                  tailwindcss: {},
+                  autoprefixer: {}
+                }
+              }
+            }
+          }
         ]
       }
     ]
