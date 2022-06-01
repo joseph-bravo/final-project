@@ -16,7 +16,6 @@ const storage = multerS3({
   bucket: process.env.AWS_S3_BUCKET,
   acl: 'public-read',
   contentType: multerS3.AUTO_CONTENT_TYPE,
-  // contentDisposition: 'attachment',
   key: (req, file, done) => {
     const fileExtension = path.extname(file.originalname);
     const key = `${req.fileName}${fileExtension}`;

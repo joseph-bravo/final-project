@@ -52,37 +52,46 @@ app.post(
 
     const sql = `/* SQL */
       with "new_file" as (
-        insert into "files"
-          ("filePath", "thumbnailPath",
-          "filePropsSound", "filePropsName",
-          "filePropsLayerCount")
-        values
-          ($1, $2, $3, $4, $5)
+      insert into "files" ("filePath", "thumbnailPath", "filePropsSound", "filePropsName", "filePropsLayerCount")
+          values ($1, $2, $3, $4, $5)
         returning
           *
       ), "new_post" as (
-        insert into
-          "posts" ("fileId", "userId", "title", "description")
-        select "fileId",
-              1,
-              $6,
-              $7
-          from "new_file"
-        returning *
-      ), "upsert_tags" as (
-        insert into "tags" ("tagName")
-        select * from unnest($8::text[])
+      insert into "posts" ("fileId", "userId", "title", "description")
+        select
+          "fileId",
+          1,
+          $6,
+          $7
+        from
+          "new_file"
+        returning
+          *
+      ),
+      "upsert_tags" as (
+      insert into "tags" ("tagName")
+        select
+          *
+        from
+          unnest($8::text[])
         on conflict ("tagName")
-        do nothing
-      ), "add_taggings" as (
-        insert into "taggings" ("postId", "tagName")
-        select "postId",
-                unnest($8::text[]) as "tagName"
-                from "new_post"
-        returning *
+          do nothing
+      ),
+      "add_taggings" as (
+      insert into "taggings" ("postId", "tagName")
+        select
+          "postId",
+          unnest($8::text[]) as "tagName"
+        from
+          "new_post"
+        returning
+          *
       )
-      select * from "new_post"
-      join "new_file" using ("fileId")
+      select
+        *
+      from
+        "new_post"
+        join "new_file" using ("fileId")
     `;
 
     const params = [
@@ -99,7 +108,6 @@ app.post(
     db
       .query(sql, params)
       .then(reSQL => {
-        console.log(reSQL);
         res.json(reSQL);
       });
   }

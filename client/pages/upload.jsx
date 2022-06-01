@@ -2,6 +2,8 @@ import React from 'react';
 import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
 
+const descriptionCharLimit = 90;
+
 export default class Upload extends React.Component {
   constructor(props) {
     super(props);
@@ -86,8 +88,9 @@ export default class Upload extends React.Component {
         });
       })
       .then(res => res.json())
-      .then(resJson => {
-        console.log(resJson);
+      .then(({ rows: [postDetails] }) => {
+        // eslint-disable-next-line no-console
+        console.log('post has been uploaded!', postDetails);
         this.resetForm();
       })
       .catch(console.error);
@@ -115,6 +118,14 @@ export default class Upload extends React.Component {
   }
 
   handleChange(event) {
+    if (event.target.name === 'description') {
+      if (event.target.value.length > descriptionCharLimit) {
+        return;
+      }
+    }
+    if (event.target.name === 'tags') {
+      event.target.value = event.target.value.toLowerCase();
+    }
     this.setState({ [event.target.name]: event.target.value });
   }
 
@@ -129,6 +140,9 @@ export default class Upload extends React.Component {
   }
 
   render() {
+    const remainingCharacters =
+      descriptionCharLimit - this.state.description.length;
+
     return (
       <form onSubmit={this.handleSubmit} className="flex flex-col gap-4 ">
         <div className="rounded-box flex justify-center bg-base-100 p-2">
@@ -162,29 +176,37 @@ export default class Upload extends React.Component {
                   <SarRenderToPng ref={this.imageRef} sar={this.state.fileParsed} />
                 </div>
                 <div className="rounded-box flex flex-col gap-4 bg-base-100 py-4">
+
                   <TextInput
                     label="post name"
                     name="title"
                     value={this.state.title}
                     handleChange={this.handleChange}
                     required={true}
+                    placeholder='enter name of post...'
                   />
+
                   <TextInput
                     label="description"
                     name="description"
                     value={this.state.description}
                     handleChange={this.handleChange}
                     required={true}
+                    remainingCharacters={remainingCharacters}
+                    placeholder={`enter description (max ${descriptionCharLimit} characters)...`}
                   />
+
                   <TextInput
                     label="tags"
                     name="tags"
                     value={this.state.tags}
                     handleChange={this.handleChange}
+                    placeholder='enter tags, split by commas, lowercase only...'
                   />
+
                 </div>
 
-                <div className="rounded-box flex justify-center bg-base-100 p-2">
+                <div className="rounded-box flex justify-center bg-base-f100 p-2">
                   <button type="submit" className="btn btn-success btn-block">
                     Submit
                   </button>
@@ -199,19 +221,38 @@ export default class Upload extends React.Component {
 }
 
 function TextInput(props) {
+  const remainingCharacters = props.remainingCharacters;
   return (
-    <div className="form-control flex flex-col gap-2 px-4">
-      <label>
+    <div className="form-control flex flex-col gap-3 px-4">
+      <label className="flex items-center">
         <span className="text-xl font-semibold">{props.label}</span>
+        {
+          // prettier-ignore
+          remainingCharacters !== undefined
+            ? (
+              <div
+                className={`radial-progress radial-progress-label
+                ${remainingCharacters ? 'text-success' : 'text-error'}`}
+            style={{
+              '--value': (remainingCharacters / descriptionCharLimit) * 100
+            }}>
+            {remainingCharacters}
+          </div>
+              )
+            : null
+        }
       </label>
-      <input
-        type="text"
-        className="input h-fit w-full bg-base-300 p-2 leading-none"
-        name={props.name}
-        value={props.value}
-        onChange={props.handleChange}
-        required={props.required}
-      />
+      <div>
+        <input
+          type="text"
+          className="input h-fit w-full bg-base-300 p-2 leading-none"
+          name={props.name}
+          value={props.value}
+          onChange={props.handleChange}
+          required={props.required}
+          placeholder={props.placeholder}
+        />
+      </div>
     </div>
   );
 }
