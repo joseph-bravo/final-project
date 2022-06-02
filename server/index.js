@@ -23,10 +23,40 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.static(publicPath));
 
+/**
+ *
+ * ? Get all post data.
+ */
 app.get('/api/catalog', res => {
-  throw new ClientError(400, 'did you mean /api/catalog/<offset> ?');
+  const sql = `/* SQL */
+    with "tag_arrays" as (
+      select
+        "postId",
+        array_agg("tagName") as "tags"
+      from "taggings"
+      group by "postId"
+    )
+
+    select
+      "title", "description", "username",
+      "fileObjectKey", "previewImagePath",
+      "filePropsName", "filePropsSound", "filePropsLayerCount",
+      "postId", "userId", "p"."createdAt", "tags"
+    from "posts" as "p"
+    join "files" using ("fileId")
+    join "users" using ("userId")
+    join "tag_arrays" using ("postId")
+    order by "p"."createdAt"
+  `;
+  db.query(sql).then(reSQL => {
+    res.json(reSQL.rows);
+  });
 });
 
+/**
+ *
+ * ? Get post data limited with a limit to 20, provided the offset
+ */
 app.get('/api/catalog/:offset', (req, res, next) => {
   const { offset } = req.params;
   const sql = `/* SQL */
@@ -57,6 +87,7 @@ app.get('/api/catalog/:offset', (req, res, next) => {
 });
 
 /**
+ *
  * ? Handles downloads of SAR files given the ID of post.
  */
 app.get('/api/post/:id/download', (req, res, next) => {
@@ -87,6 +118,7 @@ app.get('/api/post/:id/download', (req, res, next) => {
 });
 
 /**
+ *
  * ? Handle uploads from forms on the path '/api/upload'
  */
 app.post(
@@ -184,6 +216,10 @@ app.post(
   }
 );
 
+/**
+ *
+ * ? Serve index.html statically.
+ */
 app.use((req, res) => {
   res.sendFile('/index.html', {
     root: path.join(__dirname, 'public')
