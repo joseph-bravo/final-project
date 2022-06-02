@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const pg = require('pg');
 const errorMiddleware = require('./error-middleware');
-const { upload, download } = require('./uploader-middleware');
+const { upload, download } = require('./s3-middleware');
 const { randomUUID } = require('crypto');
 const ClientError = require('./client-error');
 
