@@ -1,6 +1,7 @@
 import React from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import propTypes from 'prop-types';
+import sounds from '../lib/sound-catalog.json';
 
 function PlaceholderImage() {
   return (
@@ -11,7 +12,7 @@ function PlaceholderImage() {
 function Tag(props) {
   const { tag } = props;
   return (
-    <li className="badge badge-ghost">
+    <li className="badge badge-ghost overflow-x-clip">
       <button>{tag}</button>
     </li>
   );
@@ -35,13 +36,24 @@ export default function SymbolArtCard(props) {
 
   return (
     <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
-      <div>
+      <div className="flex flex-col gap-4">
         <LazyLoadImage
           className="rounded-box aspect-[2/1] w-full"
           src={previewImagePath}
           placeholder={<PlaceholderImage />}
         />
-        <button onClick={e => playSound(filePropsSound)}>audio</button>
+        <div className="flex justify-between">
+          <div className="badge badge-lg badge-ghost gap-2 overflow-x-clip font-semibold">
+            <span className="material-icons text-xs">description</span>
+            {filePropsName}
+          </div>
+          <button
+            className="btn btn-outline btn-xs gap-2 rounded-full text-sm font-semibold"
+            onClick={e => playSound(filePropsSound)}>
+            <span className="material-icons text-xs">volume_up</span>
+            {sounds[filePropsSound].name}
+          </button>
+        </div>
       </div>
       <div>
         <div>

@@ -9,15 +9,21 @@ export default class CatalogPage extends React.Component {
       currentlyViewing: []
     };
     this.playSound = this.playSound.bind(this);
+    this.sounds = sounds.map(sound => {
+      if (sound.path === '') return null;
+      return new Audio(`res/${sound.path}`);
+    });
   }
 
   playSound(index) {
-    if (this.sound) {
-      this.sound.pause();
-    }
-    if (index === 0 || index === 1) return;
-    this.sound = new Audio('res/' + sounds[index]);
-    this.sound.play();
+    this.sounds.forEach(sound => {
+      if (!sound) {
+        return;
+      }
+      sound.pause();
+      sound.currentTime = 0;
+    });
+    this.sounds[index].play();
   }
 
   componentDidMount() {
@@ -31,7 +37,7 @@ export default class CatalogPage extends React.Component {
 
   render() {
     return (
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {this.state.currentlyViewing.map(symbolArt => {
           return (
             <SymbolArtCard

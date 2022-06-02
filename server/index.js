@@ -49,7 +49,6 @@ app.get('/api/catalog', (req, res, next) => {
     order by "p"."createdAt" desc;
   `;
   db.query(sql).then(reSQL => {
-    console.log(reSQL.rows);
     res.json(reSQL.rows);
   });
 });
