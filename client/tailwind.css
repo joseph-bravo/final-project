@@ -3,29 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* https://dev.to/kdrbek/responsive-masonry-layout-with-tailwindcss-in-2-steps-4kkj */
-@layer utilities {
-  .masonry {
-    column-gap: 1.5rem;
-    column-count: 1;
-  }
-
-  .masonry-sm {
-    column-gap: 1.5rem;
-    column-count: 2;
-  }
-
-  .masonry-md {
-    column-gap: 1.5rem;
-    column-count: 3;
-  }
-
-  .break-inside {
-    break-inside: avoid;
-    margin-bottom: 1.5rem;
-  }
-}
-
 .radial-progress-label {
   --size: 1.75rem;
   --thickness: 2px;

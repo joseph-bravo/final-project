@@ -27,7 +27,7 @@ app.use(express.static(publicPath));
  *
  * ? Get all post data.
  */
-app.get('/api/catalog', res => {
+app.get('/api/catalog', (req, res, next) => {
   const sql = `/* SQL */
     with "tag_arrays" as (
       select
@@ -46,9 +46,10 @@ app.get('/api/catalog', res => {
     join "files" using ("fileId")
     join "users" using ("userId")
     join "tag_arrays" using ("postId")
-    order by "p"."createdAt"
+    order by "p"."createdAt" desc;
   `;
   db.query(sql).then(reSQL => {
+    console.log(reSQL.rows);
     res.json(reSQL.rows);
   });
 });

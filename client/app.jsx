@@ -12,7 +12,6 @@ export default class App extends React.Component {
           <Route path="/" element={<Layout />}>
             <Route index element={<CatalogPage />} />
             <Route path="upload" element={<UploadPage />} />
-            <Route path="ba/ba/ba" element={<></>} />
           </Route>
         </Routes>
       </BrowserRouter>

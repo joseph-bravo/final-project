@@ -1,17 +1,27 @@
 import React from 'react';
 import SymbolArtCard from '../components/symbol-art-card';
-import { trackWindowScroll } from 'react-lazy-load-image-component';
+import sounds from '../lib/sound-catalog.json';
 
-class CatalogPage extends React.Component {
+export default class CatalogPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       currentlyViewing: []
     };
+    this.playSound = this.playSound.bind(this);
+  }
+
+  playSound(index) {
+    if (this.sound) {
+      this.sound.pause();
+    }
+    if (index === 0 || index === 1) return;
+    this.sound = new Audio('res/' + sounds[index]);
+    this.sound.play();
   }
 
   componentDidMount() {
-    fetch(`/api/catalog/${this.state.currentlyViewing.length}`)
+    fetch('/api/catalog')
       .then(res => res.json())
       .then(res => {
         this.setState({ currentlyViewing: res });
@@ -21,13 +31,17 @@ class CatalogPage extends React.Component {
 
   render() {
     return (
-      <div className="masonry md:masonry-sm">
+      <div className="grid gap-4 md:grid-cols-2">
         {this.state.currentlyViewing.map(symbolArt => {
-          return <SymbolArtCard key={symbolArt.postId} symbolArt={symbolArt} />;
+          return (
+            <SymbolArtCard
+              key={symbolArt.postId}
+              symbolArt={symbolArt}
+              playSound={this.playSound}
+            />
+          );
         })}
       </div>
     );
   }
 }
-
-export default trackWindowScroll(CatalogPage);

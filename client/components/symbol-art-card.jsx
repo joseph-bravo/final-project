@@ -8,6 +8,15 @@ function PlaceholderImage() {
   );
 }
 
+function Tag(props) {
+  const { tag } = props;
+  return (
+    <li className="badge badge-ghost">
+      <button>{tag}</button>
+    </li>
+  );
+}
+
 export default function SymbolArtCard(props) {
   const {
     postId,
@@ -16,31 +25,45 @@ export default function SymbolArtCard(props) {
     previewImagePath,
     tags,
     username,
-    filePropsSound
+    filePropsSound,
+    filePropsName
   } = props.symbolArt;
+
+  const { playSound } = props;
 
   const downloadLink = `/api/post/${postId}/download`;
 
   return (
-    <div className="break-inside rounded-box grid grid-cols-2 gap-4 bg-base-100 p-4">
+    <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
       <div>
         <LazyLoadImage
           className="rounded-box aspect-[2/1] w-full"
           src={previewImagePath}
           placeholder={<PlaceholderImage />}
         />
+        <button onClick={e => playSound(filePropsSound)}>audio</button>
       </div>
-      <div className="span">
-        <div className="flex items-center justify-between">
-          <h3 className="m-0 text-lg font-bold">{title}</h3>
-          <a
-            href={downloadLink}
-            className="btn btn-secondary btn-sm w-1/4 px-2">
-            <span className="material-icons">download</span>
-          </a>
+      <div>
+        <div>
+          <h3 className="m-0 break-words break-all text-lg font-bold ">
+            {title}
+          </h3>
         </div>
         <h4 className="text-sm font-semibold">@{username}</h4>
         <p className="text-sm">{description}</p>
+      </div>
+      <ul className="flex flex-wrap gap-2">
+        {tags.map((tag, id) => {
+          if (tag === '') return '';
+          return <Tag key={id} tag={tag} />;
+        })}
+      </ul>
+      <div>
+        <a
+          href={downloadLink}
+          className="btn btn-secondary btn-sm btn-block px-2">
+          <span className="material-icons">download</span>
+        </a>
       </div>
     </div>
   );
