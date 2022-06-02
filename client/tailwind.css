@@ -5,26 +5,24 @@
 
 /* https://dev.to/kdrbek/responsive-masonry-layout-with-tailwindcss-in-2-steps-4kkj */
 @layer utilities {
-  @variants responsive {
-    .masonry {
-      column-gap: 1.5rem;
-      column-count: 1;
-    }
+  .masonry {
+    column-gap: 1.5rem;
+    column-count: 1;
+  }
 
-    .masonry-sm {
-      column-gap: 1.5rem;
-      column-count: 2;
-    }
+  .masonry-sm {
+    column-gap: 1.5rem;
+    column-count: 2;
+  }
 
-    .masonry-md {
-      column-gap: 1.5rem;
-      column-count: 3;
-    }
+  .masonry-md {
+    column-gap: 1.5rem;
+    column-count: 3;
+  }
 
-    .break-inside {
-      break-inside: avoid;
-      margin-bottom: 1.5rem;
-    }
+  .break-inside {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
   }
 }
 
