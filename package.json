@@ -24,8 +24,10 @@
     "pg": "^8.7.3",
     "pixi-projection": "^0.4.4",
     "pixi.js": "^6.3.2",
+    "prop-types": "^15.8.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-lazy-load-image-component": "^1.5.4",
     "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
