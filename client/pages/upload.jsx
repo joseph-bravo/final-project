@@ -5,6 +5,8 @@ import processSarBuffer from '../lib/sar-parse';
 
 const descriptionCharLimit = 90;
 const titleCharLimit = 25;
+const tagCharLimit = 10;
+const tagCountLimit = 5;
 
 function Navigate(props) {
   const navigate = useNavigate();
@@ -141,6 +143,18 @@ export default class UploadPage extends React.Component {
       }
     }
     if (event.target.name === 'tags') {
+      const { value } = event.target;
+      let tags = value.split(',');
+      tags = tags.map(e => e.trim());
+      if (tags.length > 5) {
+        return;
+      }
+      for (let i = 0; i < tags.length; i++) {
+        const tag = tags[i];
+        if (tag.length > 10) {
+          return;
+        }
+      }
       event.target.value = event.target.value.toLowerCase();
     }
     this.setState({ [event.target.name]: event.target.value });
@@ -209,7 +223,8 @@ export default class UploadPage extends React.Component {
                     required={true}
                     remainingCharacters={titleRemainingChars}
                     totalCharacters={titleCharLimit}
-                    placeholder={`required: enter name of post (max ${titleCharLimit} characters)...`}
+                    placeholder="enter name of post"
+                    rules={`required, max ${titleCharLimit} characters`}
                   />
 
                   <TextInput
@@ -219,7 +234,8 @@ export default class UploadPage extends React.Component {
                     handleChange={this.handleChange}
                     remainingCharacters={descriptionRemainingChars}
                     totalCharacters={descriptionCharLimit}
-                    placeholder={`enter description (max ${descriptionCharLimit} characters)...`}
+                    placeholder="enter description"
+                    rules={`max ${descriptionCharLimit} characters`}
                   />
 
                   <TextInput
@@ -227,7 +243,8 @@ export default class UploadPage extends React.Component {
                     name="tags"
                     value={this.state.tags}
                     handleChange={this.handleChange}
-                    placeholder='enter tags, split by commas, lowercase only...'
+                    placeholder="enter tags"
+                    rules={`lowercase, split by commas, max ${tagCountLimit} tags, ${tagCharLimit} chars each`}
                   />
 
                 </div>
@@ -278,6 +295,9 @@ function TextInput(props) {
           required={props.required}
           placeholder={props.placeholder}
         />
+        <label className="label">
+          <span className="badge badge-ghost">{props.rules}</span>
+        </label>
       </div>
     </div>
   );
