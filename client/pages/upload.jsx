@@ -102,8 +102,6 @@ export default class UploadPage extends React.Component {
       })
       .then(res => res.json())
       .then(({ rows: [postDetails] }) => {
-        // eslint-disable-next-line no-console
-        console.log('post has been uploaded!', postDetails);
         this.resetForm();
         this.setState({ goingBack: true });
       })
