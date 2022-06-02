@@ -10,15 +10,15 @@ create table "posts" (
   "postId" serial primary key not null,
   "fileId" integer not null,
   "userId" integer not null,
-  "createdAt" timestamptz not null default now(),
+  "createdAt" timestamptz not null default 'now()',
   "title" text not null,
   "description" text
 );
 
 create table "files" (
   "fileId" serial primary key not null,
-  "filePath" text not null,
-  "thumbnailPath" text not null,
+  "fileObjectKey" text not null,
+  "previewImagePath" text not null,
   "filePropsName" text,
   "filePropsSound" integer,
   "filePropsLayerCount" integer
@@ -28,7 +28,7 @@ create table "users" (
   "userId" serial unique primary key not null,
   "username" text unique not null,
   "hashedPassword" text unique not null,
-  "createdAt" timestamptz not null default now()
+  "createdAt" timestamptz not null default 'now()'
 );
 
 create table "tags" (
