@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Upload from './pages/upload';
+import UploadPage from './pages/upload';
 import Layout from './layout';
+import CatalogPage from './pages/catalog';
 
 export default class App extends React.Component {
   render() {
@@ -9,7 +10,9 @@ export default class App extends React.Component {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Upload />} />
+            <Route index element={<CatalogPage />} />
+            <Route path="upload" element={<UploadPage />} />
+            <Route path="ba/ba/ba" element={<></>} />
           </Route>
         </Routes>
       </BrowserRouter>
