@@ -10,7 +10,7 @@ create table "posts" (
   "postId" serial primary key not null,
   "fileId" integer not null,
   "userId" integer not null,
-  "createdAt" timestamptz not null default 'now()',
+  "createdAt" timestamptz not null default now(),
   "title" text not null,
   "description" text
 );
@@ -28,7 +28,7 @@ create table "users" (
   "userId" serial unique primary key not null,
   "username" text unique not null,
   "hashedPassword" text unique not null,
-  "createdAt" timestamptz not null default 'now()'
+  "createdAt" timestamptz not null default now()
 );
 
 create table "tags" (
