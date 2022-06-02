@@ -23,7 +23,12 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.static(publicPath));
 
-app.get('/api/catalog', (req, res, next) => {
+app.get('/api/catalog', res => {
+  throw new ClientError(400, 'did you mean /api/catalog/<offset> ?');
+});
+
+app.get('/api/catalog/:offset', (req, res, next) => {
+  const { offset } = req.params;
   const sql = `/* SQL */
     with "tag_arrays" as (
       select
@@ -35,17 +40,19 @@ app.get('/api/catalog', (req, res, next) => {
 
     select
       "title", "description", "username",
-      "file", "thumbnailPath",
+      "fileObjectKey", "previewImagePath",
       "filePropsName", "filePropsSound", "filePropsLayerCount",
-      "postId", "userId", "p"."createdAt"
+      "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
     join "files" using ("fileId")
     join "users" using ("userId")
     join "tag_arrays" using ("postId")
     order by "p"."createdAt"
+    limit 20
+    offset $1;
   `;
-  db.query(sql).then(posts => {
-    res.json(posts);
+  db.query(sql, [offset]).then(reSQL => {
+    res.json(reSQL.rows);
   });
 });
 
@@ -57,9 +64,26 @@ app.get('/api/post/:id/download', (req, res, next) => {
   if (Number.isNaN(Number(id))) {
     throw new ClientError(400, 'please provide a valid post ID (number)');
   }
-  download().then(downloadURL => {
-    res.redirect(downloadURL);
-  });
+  const sql = `/* SQL */
+    select
+      "fileObjectKey", "title"
+    from
+      "posts"
+    join "files" using ("fileId")
+    where
+      "postId" = $1;
+  `;
+  // prettier-ignore
+  db.query(sql, [id])
+    .then(reSQL => {
+      if (!reSQL.rows) {
+        res.status(404).json({ error: `unable to find entry with id: ${id}` });
+      }
+      const [{ fileObjectKey, title }] = reSQL.rows;
+      download(fileObjectKey, `${title}.sar`).then(downloadURL => {
+        res.redirect(downloadURL);
+      });
+    });
 });
 
 /**
@@ -77,8 +101,9 @@ app.post(
   ]),
   (req, res, next) => {
     const { sar, thumbnail } = req.files;
+
     const paths = {
-      sar: sar[0].location,
+      sar: sar[0].key,
       thumbnail: thumbnail[0].location
     };
 
@@ -99,7 +124,7 @@ app.post(
 
     const sql = `/* SQL */
       with "new_file" as (
-      insert into "files" ("filePath", "thumbnailPath", "filePropsSound", "filePropsName", "filePropsLayerCount")
+      insert into "files" ("fileObjectKey", "previewImagePath", "filePropsSound", "filePropsName", "filePropsLayerCount")
           values ($1, $2, $3, $4, $5)
         returning
           *

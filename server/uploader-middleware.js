@@ -1,5 +1,6 @@
 const path = require('path');
-const { S3Client } = require('@aws-sdk/client-s3/');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3/');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 
@@ -27,4 +28,22 @@ const upload = multer({
   storage
 });
 
-module.exports = upload;
+/**
+ * Download an object with a specified file name.
+ * @param {string} objectKey - Key of the S3 object you want to download.
+ * @param {string} fileName - Name of the resulting file.
+ * @returns {string} URL to redirect user to download to.
+ */
+async function download(objectKey, fileName) {
+  const command = new GetObjectCommand({
+    Key: objectKey,
+    Bucket: process.env.AWS_S3_BUCKET,
+    ResponseContentDisposition: `attachment; filename=${fileName}`
+  });
+
+  const url = await getSignedUrl(s3, command);
+
+  return url;
+}
+
+module.exports = { upload, download };
