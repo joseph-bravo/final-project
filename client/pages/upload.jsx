@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
 
 const descriptionCharLimit = 90;
 const titleCharLimit = 25;
 
-export default class Upload extends React.Component {
+function Navigate(props) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate('/');
+  });
+  return <></>;
+}
+
+export default class UploadPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,7 +23,8 @@ export default class Upload extends React.Component {
       title: '',
       description: '',
       tags: '',
-      isErrorAlertOpen: false
+      isErrorAlertOpen: false,
+      goingBack: false
     };
 
     this.imageRef = React.createRef();
@@ -93,6 +103,7 @@ export default class Upload extends React.Component {
         // eslint-disable-next-line no-console
         console.log('post has been uploaded!', postDetails);
         this.resetForm();
+        this.setState({ goingBack: true });
       })
       .catch(console.error);
   }
@@ -150,8 +161,14 @@ export default class Upload extends React.Component {
       descriptionCharLimit - this.state.description.length;
     const titleRemainingChars = titleCharLimit - this.state.title.length;
 
+    if (this.state.goingBack) {
+      return <Navigate to="/" />;
+    }
+
     return (
-      <form onSubmit={this.handleSubmit} className="flex flex-col gap-4 ">
+      <form
+        onSubmit={this.handleSubmit}
+        className="mx-auto flex max-w-3xl flex-col gap-4 ">
         <div className="rounded-box flex justify-center bg-base-100 p-2">
           <label htmlFor="fileInput" className="btn btn-secondary btn-block">
             Upload .sar File
