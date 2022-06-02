@@ -3,8 +3,9 @@ const path = require('path');
 const express = require('express');
 const pg = require('pg');
 const errorMiddleware = require('./error-middleware');
-const upload = require('./uploader-middleware');
+const { upload, download } = require('./uploader-middleware');
 const { randomUUID } = require('crypto');
+const ClientError = require('./client-error');
 
 const app = express();
 const publicPath = path.join(__dirname, 'public');
@@ -21,6 +22,45 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(express.static(publicPath));
+
+app.get('/api/catalog', (req, res, next) => {
+  const sql = `/* SQL */
+    with "tag_arrays" as (
+      select
+        "postId",
+        array_agg("tagName") as "tags"
+      from "taggings"
+      group by "postId"
+    )
+
+    select
+      "title", "description", "username",
+      "file", "thumbnailPath",
+      "filePropsName", "filePropsSound", "filePropsLayerCount",
+      "postId", "userId", "p"."createdAt"
+    from "posts" as "p"
+    join "files" using ("fileId")
+    join "users" using ("userId")
+    join "tag_arrays" using ("postId")
+    order by "p"."createdAt"
+  `;
+  db.query(sql).then(posts => {
+    res.json(posts);
+  });
+});
+
+/**
+ * ? Handles downloads of SAR files given the ID of post.
+ */
+app.get('/api/post/:id/download', (req, res, next) => {
+  const { id } = req.params;
+  if (Number.isNaN(Number(id))) {
+    throw new ClientError(400, 'please provide a valid post ID (number)');
+  }
+  download().then(downloadURL => {
+    res.redirect(downloadURL);
+  });
+});
 
 /**
  * ? Handle uploads from forms on the path '/api/upload'
@@ -44,12 +84,16 @@ app.post(
 
     const {
       title,
-      description,
       tags: rawTags,
       filePropsSound,
       filePropsLayerCount,
       filePropsName
     } = req.body;
+
+    let { description } = req.body;
+    if (!req.body.description) {
+      description = '';
+    }
 
     const tags = rawTags.split(',').map(e => e.trim());
 
@@ -108,8 +152,7 @@ app.post(
       tags
     ];
     // prettier-ignore
-    db
-      .query(sql, params)
+    db.query(sql, params)
       .then(reSQL => {
         res.json(reSQL);
       });
