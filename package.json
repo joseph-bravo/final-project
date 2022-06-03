@@ -9,6 +9,8 @@
     "dev": "NODE_ENV=development nodemon .",
     "build": "NODE_ENV=production webpack",
     "db:import": "sh database/import.sh",
+    "db:save": "sh database/save.sh",
+    "db:load": "sh database/load.sh",
     "prepare": "husky install"
   },
   "dependencies": {
