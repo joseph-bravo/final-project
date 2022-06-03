@@ -23,13 +23,7 @@ export default class CatalogPage extends React.Component {
     return (
       <div className="grid gap-4 sm:grid-cols-2">
         {this.state.currentlyViewing.map(symbolArt => {
-          return (
-            <SymbolArtCard
-              key={symbolArt.postId}
-              symbolArt={symbolArt}
-              playSound={this.context.playSound}
-            />
-          );
+          return <SymbolArtCard key={symbolArt.postId} symbolArt={symbolArt} />;
         })}
       </div>
     );

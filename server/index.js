@@ -86,14 +86,9 @@ app.get('/api/catalog/:offset', (req, res, next) => {
 
 /**
  * ? Queries DB for single post and its details, like /api/catalog/ but single.
- * * query:
- * *    id: ID of post to search for
- * * response:
- * *    single row of data for post
- * ? i.e. /api/posts/view?id=420
  */
-app.get('/api/posts/view', (req, res, next) => {
-  const { id } = req.query;
+app.get('/api/posts/view/:id', (req, res, next) => {
+  const { id } = req.params;
   const sql = `/* SQL */
     with "tag_arrays" as (
       select
@@ -126,14 +121,9 @@ app.get('/api/posts/view', (req, res, next) => {
 
 /**
  * ? Redirects to a download of the SAR file given the ID of post.
- * * query:
- * *    id: ID of post to download
- * * response:
- * *    redirect to URL for download.
- * ? i.e. /api/posts/download?id=420
  */
-app.get('/api/posts/download', (req, res, next) => {
-  const { id } = req.query;
+app.get('/api/posts/download/:id', (req, res, next) => {
+  const { id } = req.params;
   if (Number.isNaN(Number(id))) {
     throw new ClientError(400, 'please provide a valid post ID (number)');
   }

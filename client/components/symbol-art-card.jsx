@@ -2,7 +2,9 @@ import React from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import propTypes from 'prop-types';
 import sounds from '../lib/sound-catalog.json';
-import { urlDownloadFromId } from '../lib/endpoints';
+import { apiDownloadPostFromId, urlPostFromId } from '../lib/endpoints';
+import AppContext from '../lib/app-context';
+import { Link } from 'react-router-dom';
 
 function PlaceholderImage() {
   return (
@@ -19,7 +21,19 @@ function Tag(props) {
   );
 }
 
+/**
+ *
+ * @param {Object} props
+ * @param {Object} props.symbolArt - Symbol Art data from fetch request.
+ * @returns
+ */
 export default function SymbolArtCard(props) {
+  const { playSound } = React.useContext(AppContext);
+
+  if (!props.symbolArt) {
+    return;
+  }
+
   const {
     postId,
     title,
@@ -31,9 +45,8 @@ export default function SymbolArtCard(props) {
     filePropsName
   } = props.symbolArt;
 
-  const { playSound } = props;
-
-  const downloadLink = urlDownloadFromId(postId);
+  const downloadLink = apiDownloadPostFromId(postId);
+  const postLink = urlPostFromId(postId);
 
   return (
     <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
@@ -67,9 +80,11 @@ export default function SymbolArtCard(props) {
       </div>
       <div>
         <div>
-          <h3 className="m-0 break-words break-all text-lg font-bold ">
+          <Link
+            className="link-hover m-0 break-words break-all text-lg font-bold "
+            to={postLink}>
             {title}
-          </h3>
+          </Link>
         </div>
         <h4 className="text-sm font-semibold">@{username}</h4>
         <p className="text-sm">{description}</p>
