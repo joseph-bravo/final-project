@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import SymbolArtCard from '../components/symbol-art-card';
+import SinglePostSymbolArt from '../components/symbol-art-single-post';
 import { apiViewPostFromId } from '../lib/endpoints';
 
 export default function SinglePostPage(props) {
@@ -14,5 +14,5 @@ export default function SinglePostPage(props) {
       .then(([symbolArtRes]) => setSymbolArt(symbolArtRes));
   }, [id]);
 
-  return <SymbolArtCard symbolArt={symbolArt} />;
+  return <SinglePostSymbolArt symbolArt={symbolArt} />;
 }

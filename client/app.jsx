@@ -15,7 +15,7 @@ export default class App extends React.Component {
     this.playSound = this.playSound.bind(this);
     this.sounds = sounds.map(sound => {
       if (sound.path === '') return null;
-      return new Audio(`res/${sound.path}`);
+      return new Audio(`/res/${sound.path}`);
     });
   }
 
@@ -32,7 +32,9 @@ export default class App extends React.Component {
     }
     try {
       this.sounds[index].play();
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   render() {

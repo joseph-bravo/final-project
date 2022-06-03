@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useLocation, Routes, Route } from 'react-router-dom';
+import { NavLink, Routes, Route } from 'react-router-dom';
 
 export default function Header(props) {
   const homeHeader = 'Symbol Art Vault';
@@ -27,7 +27,7 @@ export default function Header(props) {
 
   return (
     <header
-      className="navbar rounded-box sticky top-4
+      className="navbar rounded-box sticky top-4 z-10
         mx-auto mb-8 flex w-11/12 max-w-3xl select-none items-center
         justify-center bg-primary px-4 text-primary-content shadow-md">
       <div className="justify-left flex-1 flex-shrink md:flex-none">

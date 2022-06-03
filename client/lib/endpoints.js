@@ -7,7 +7,7 @@ export function apiDownloadPostFromId(postId) {
   return `/api/posts/download/${postId}`;
 }
 
-export function urlPostFromId(postId) {
+export function pathPostFromId(postId) {
   return `/posts/${postId}`;
 }
 

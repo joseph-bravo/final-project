@@ -1,25 +1,12 @@
 import React from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import propTypes from 'prop-types';
-import sounds from '../lib/sound-catalog.json';
-import { apiDownloadPostFromId, urlPostFromId } from '../lib/endpoints';
-import AppContext from '../lib/app-context';
 import { Link } from 'react-router-dom';
-
-function PlaceholderImage() {
-  return (
-    <div className="bg-300 rounded-box aspect-[2/1] w-full animate-pulse"></div>
-  );
-}
-
-function Tag(props) {
-  const { tag } = props;
-  return (
-    <li className="badge badge-ghost overflow-x-clip">
-      <button>{tag}</button>
-    </li>
-  );
-}
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { apiDownloadPostFromId, pathPostFromId } from '../lib/endpoints';
+import AppContext from '../lib/app-context';
+import sounds from '../lib/sound-catalog.json';
+import Tag from './tag';
+import PlaceholderImage from './placeholder-image';
 
 /**
  *
@@ -46,18 +33,20 @@ export default function SymbolArtCard(props) {
   } = props.symbolArt;
 
   const downloadLink = apiDownloadPostFromId(postId);
-  const postLink = urlPostFromId(postId);
+  const postLink = pathPostFromId(postId);
 
   return (
     <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
       <div className="flex flex-col gap-4">
-        <LazyLoadImage
-          className="rounded-box aspect-[2/1] w-full select-none"
-          src={previewImagePath}
-          placeholder={<PlaceholderImage />}
-        />
+        <Link to={postLink} className="transition-all hover:translate-y-0.5">
+          <LazyLoadImage
+            className="rounded-box aspect-[2/1] w-full select-none shadow-sm"
+            src={previewImagePath}
+            placeholder={<PlaceholderImage />}
+          />
+        </Link>
         <div className="flex justify-between">
-          <div className="badge badge-lg badge-ghost gap-2 overflow-x-clip font-semibold">
+          <div className="flex items-center gap-2 break-all rounded-full bg-base-300 px-2 font-semibold">
             <span className="material-icons select-none text-xs">
               description
             </span>
@@ -78,12 +67,12 @@ export default function SymbolArtCard(props) {
           }{' '}
         </div>
       </div>
-      <div>
-        <div>
-          <Link
-            className="link-hover m-0 break-words break-all text-lg font-bold "
-            to={postLink}>
-            {title}
+      <div className="y-2 flex flex-col ">
+        <div className="w-fit">
+          <Link to={postLink}>
+            <h3 className="link-hover m-0 break-words break-all text-lg font-bold">
+              {title}
+            </h3>
           </Link>
         </div>
         <h4 className="text-sm font-semibold">@{username}</h4>
