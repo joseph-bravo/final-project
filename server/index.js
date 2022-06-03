@@ -89,6 +89,9 @@ app.get('/api/catalog/:offset', (req, res, next) => {
  */
 app.get('/api/posts/view/:id', (req, res, next) => {
   const { id } = req.params;
+  if (Number.isNaN(Number(id))) {
+    throw new ClientError(400, 'please provide a valid post ID (number)');
+  }
   const sql = `/* SQL */
     with "tag_arrays" as (
       select
