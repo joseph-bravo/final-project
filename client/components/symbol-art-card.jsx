@@ -39,13 +39,15 @@ export default function SymbolArtCard(props) {
     <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
       <div className="flex flex-col gap-4">
         <LazyLoadImage
-          className="rounded-box aspect-[2/1] w-full"
+          className="rounded-box aspect-[2/1] w-full select-none"
           src={previewImagePath}
           placeholder={<PlaceholderImage />}
         />
         <div className="flex justify-between">
           <div className="badge badge-lg badge-ghost gap-2 overflow-x-clip font-semibold">
-            <span className="material-icons text-xs">description</span>
+            <span className="material-icons select-none text-xs">
+              description
+            </span>
             {filePropsName}
           </div>
           {

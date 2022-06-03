@@ -20,8 +20,8 @@ export default function Header(props) {
 
   return (
     <header
-      className="navbar rounded-box sticky
-        top-4 mx-auto mb-8 flex w-11/12 max-w-3xl items-center
+      className="navbar rounded-box sticky top-4
+        mx-auto mb-8 flex w-11/12 max-w-3xl select-none items-center
         justify-center bg-primary px-4 text-primary-content shadow-md">
       <div className="justify-left flex-1 flex-shrink md:flex-none">
         <NavLink
@@ -40,7 +40,7 @@ export default function Header(props) {
       </div>
 
       <div className="flex flex-1 justify-end md:hidden">
-        <div className="dropdown-end dropdown">
+        <div className="dropdown dropdown-end">
           <label tabIndex="0" className="btn btn-primary">
             <span className="material-icons">menu</span>
           </label>
