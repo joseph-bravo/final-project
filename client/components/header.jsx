@@ -1,22 +1,29 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, Routes, Route } from 'react-router-dom';
 
 export default function Header(props) {
-  const { pathname } = useLocation();
-  /**
-   * Key: Path
-   * Header: String to display on Header and Menu
-   */
-  const titles = {
-    '/': {
-      header: 'Symbol Vault'
+  const homeHeader = 'Symbol Art Vault';
+  const paths = [
+    {
+      path: 'upload',
+      header: 'New Post'
     },
-    '/upload': {
+    {
+      path: 'posts/:id',
+      header: 'Viewing Post'
+    },
+    {
+      path: '*',
+      header: '404: Not Found'
+    }
+  ];
+
+  const actions = [
+    {
+      path: 'upload',
       header: 'New Post'
     }
-  };
-
-  const actions = [titles['/upload']];
+  ];
 
   return (
     <header
@@ -35,12 +42,19 @@ export default function Header(props) {
 
       <div className="flex-auto justify-center md:justify-start md:px-4">
         <h1 className="text-center text-4xl font-black leading-none">
-          {titles[pathname].header}
+          <Routes>
+            <Route index element={<>{homeHeader}</>} />
+            {paths.map(e => {
+              return (
+                <Route key={e.path} path={e.path} element={<>{e.header}</>} />
+              );
+            })}
+          </Routes>
         </h1>
       </div>
 
       <div className="flex flex-1 justify-end md:hidden">
-        <div className="dropdown dropdown-end">
+        <div className="dropdown-end dropdown">
           <label tabIndex="0" className="btn btn-primary">
             <span className="material-icons">menu</span>
           </label>
@@ -70,7 +84,7 @@ export default function Header(props) {
           actions.map(action => (
             <NavLink
               key={action}
-              to="upload"
+              to={action.path}
               className={({ isActive }) =>
                 !isActive ? 'btn btn-primary text-xl lowercase' : 'hidden'
               }>
