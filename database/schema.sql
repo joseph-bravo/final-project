@@ -17,8 +17,8 @@ create table "posts" (
 
 create table "files" (
   "fileId" serial primary key not null,
-  "filePath" text not null,
-  "thumbnailPath" text not null,
+  "fileObjectKey" text not null,
+  "previewImagePath" text not null,
   "filePropsName" text,
   "filePropsSound" integer,
   "filePropsLayerCount" integer

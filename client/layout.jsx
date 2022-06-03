@@ -7,7 +7,7 @@ export default class Layout extends React.Component {
     return (
       <main className="min-h-screen bg-base-300 pb-8">
         <Header />
-        <div className="mx-auto w-11/12 max-w-3xl">
+        <div className="mx-auto w-11/12 max-w-4xl">
           <Outlet />
         </div>
       </main>

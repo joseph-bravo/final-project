@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
 
 const descriptionCharLimit = 90;
 const titleCharLimit = 25;
+const tagCharLimit = 10;
+const tagCountLimit = 5;
 
-export default class Upload extends React.Component {
+function Navigate(props) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate('/');
+  });
+  return <></>;
+}
+
+export default class UploadPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,7 +25,8 @@ export default class Upload extends React.Component {
       title: '',
       description: '',
       tags: '',
-      isErrorAlertOpen: false
+      isErrorAlertOpen: false,
+      goingBack: false
     };
 
     this.imageRef = React.createRef();
@@ -90,9 +102,8 @@ export default class Upload extends React.Component {
       })
       .then(res => res.json())
       .then(({ rows: [postDetails] }) => {
-        // eslint-disable-next-line no-console
-        console.log('post has been uploaded!', postDetails);
         this.resetForm();
+        this.setState({ goingBack: true });
       })
       .catch(console.error);
   }
@@ -130,6 +141,18 @@ export default class Upload extends React.Component {
       }
     }
     if (event.target.name === 'tags') {
+      const { value } = event.target;
+      let tags = value.split(',');
+      tags = tags.map(e => e.trim());
+      if (tags.length > 5) {
+        return;
+      }
+      for (let i = 0; i < tags.length; i++) {
+        const tag = tags[i];
+        if (tag.length > 10) {
+          return;
+        }
+      }
       event.target.value = event.target.value.toLowerCase();
     }
     this.setState({ [event.target.name]: event.target.value });
@@ -150,8 +173,14 @@ export default class Upload extends React.Component {
       descriptionCharLimit - this.state.description.length;
     const titleRemainingChars = titleCharLimit - this.state.title.length;
 
+    if (this.state.goingBack) {
+      return <Navigate to="/" />;
+    }
+
     return (
-      <form onSubmit={this.handleSubmit} className="flex flex-col gap-4 ">
+      <form
+        onSubmit={this.handleSubmit}
+        className="mx-auto flex max-w-3xl flex-col gap-4 ">
         <div className="rounded-box flex justify-center bg-base-100 p-2">
           <label htmlFor="fileInput" className="btn btn-secondary btn-block">
             Upload .sar File
@@ -192,7 +221,8 @@ export default class Upload extends React.Component {
                     required={true}
                     remainingCharacters={titleRemainingChars}
                     totalCharacters={titleCharLimit}
-                    placeholder={`required: enter name of post (max ${titleCharLimit} characters)...`}
+                    placeholder="enter name of post"
+                    rules={`required, max ${titleCharLimit} characters`}
                   />
 
                   <TextInput
@@ -202,7 +232,8 @@ export default class Upload extends React.Component {
                     handleChange={this.handleChange}
                     remainingCharacters={descriptionRemainingChars}
                     totalCharacters={descriptionCharLimit}
-                    placeholder={`enter description (max ${descriptionCharLimit} characters)...`}
+                    placeholder="enter description"
+                    rules={`max ${descriptionCharLimit} characters`}
                   />
 
                   <TextInput
@@ -210,7 +241,8 @@ export default class Upload extends React.Component {
                     name="tags"
                     value={this.state.tags}
                     handleChange={this.handleChange}
-                    placeholder='enter tags, split by commas, lowercase only...'
+                    placeholder="enter tags"
+                    rules={`lowercase, split by commas, max ${tagCountLimit} tags, ${tagCharLimit} chars each`}
                   />
 
                 </div>
@@ -261,6 +293,9 @@ function TextInput(props) {
           required={props.required}
           placeholder={props.placeholder}
         />
+        <label className="label">
+          <span className="badge badge-ghost">{props.rules}</span>
+        </label>
       </div>
     </div>
   );
