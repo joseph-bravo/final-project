@@ -7,8 +7,10 @@ export default function SinglePostPage(props) {
   const { id } = useParams();
   const apiPath = apiViewPostFromId(id);
   const [symbolArt, setSymbolArt] = useState();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch(apiPath)
       .then(res => res.json())
       .then(res => {
@@ -18,8 +20,11 @@ export default function SinglePostPage(props) {
           const [symbolArtRes] = res;
           setSymbolArt(symbolArtRes);
         }
+        setLoading(false);
       });
   }, [id]);
 
-  return <SinglePostSymbolArt symbolArt={symbolArt} id={id} />;
+  return (
+    <SinglePostSymbolArt loading={loading} symbolArt={symbolArt} id={id} />
+  );
 }
