@@ -47,12 +47,19 @@ export default function SymbolArtCard(props) {
             <span className="material-icons text-xs">description</span>
             {filePropsName}
           </div>
-          <button
-            className="btn btn-outline btn-xs gap-2 rounded-full text-sm font-semibold"
-            onClick={e => playSound(filePropsSound)}>
-            <span className="material-icons text-xs">volume_up</span>
-            {sounds[filePropsSound].name}
-          </button>
+          {
+            // prettier-ignore
+            filePropsSound !== 1
+              ? (
+            <button
+              className="btn btn-outline btn-xs gap-2 rounded-full text-sm font-semibold"
+              onClick={e => playSound(filePropsSound)}>
+              <span className="material-icons text-xs">volume_up</span>
+              {sounds[filePropsSound].name}
+            </button>
+                )
+              : null
+          }{' '}
         </div>
       </div>
       <div>

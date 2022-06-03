@@ -23,7 +23,12 @@ export default class CatalogPage extends React.Component {
       sound.pause();
       sound.currentTime = 0;
     });
-    this.sounds[index].play();
+    if (!this.sounds[index]) {
+      return;
+    }
+    try {
+      this.sounds[index].play();
+    } catch (e) {}
   }
 
   componentDidMount() {
