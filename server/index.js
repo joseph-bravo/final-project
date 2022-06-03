@@ -87,11 +87,11 @@ app.get('/api/catalog/:offset', (req, res, next) => {
 });
 
 /**
- *
- * ? Handles downloads of SAR files given the ID of post.
+ * ? Redirects to a download of the SAR file given the ID of post.
+ * @QueryParam id - ID of the post to download.
  */
-app.get('/api/post/:id/download', (req, res, next) => {
-  const { id } = req.params;
+app.get('/api/posts/download', (req, res, next) => {
+  const { id } = req.query;
   if (Number.isNaN(Number(id))) {
     throw new ClientError(400, 'please provide a valid post ID (number)');
   }

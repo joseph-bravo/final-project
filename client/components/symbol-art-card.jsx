@@ -32,7 +32,7 @@ export default function SymbolArtCard(props) {
 
   const { playSound } = props;
 
-  const downloadLink = `/api/post/${postId}/download`;
+  const downloadLink = `/api/posts/download?id=${postId}`;
 
   return (
     <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
