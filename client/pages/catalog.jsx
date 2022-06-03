@@ -1,6 +1,6 @@
 import React from 'react';
 import SymbolArtCard from '../components/symbol-art-card';
-import sounds from '../lib/sound-catalog.json';
+import AppContext from '../lib/app-context';
 
 export default class CatalogPage extends React.Component {
   constructor(props) {
@@ -8,27 +8,6 @@ export default class CatalogPage extends React.Component {
     this.state = {
       currentlyViewing: []
     };
-    this.playSound = this.playSound.bind(this);
-    this.sounds = sounds.map(sound => {
-      if (sound.path === '') return null;
-      return new Audio(`res/${sound.path}`);
-    });
-  }
-
-  playSound(index) {
-    this.sounds.forEach(sound => {
-      if (!sound) {
-        return;
-      }
-      sound.pause();
-      sound.currentTime = 0;
-    });
-    if (!this.sounds[index]) {
-      return;
-    }
-    try {
-      this.sounds[index].play();
-    } catch (e) {}
   }
 
   componentDidMount() {
@@ -48,7 +27,7 @@ export default class CatalogPage extends React.Component {
             <SymbolArtCard
               key={symbolArt.postId}
               symbolArt={symbolArt}
-              playSound={this.playSound}
+              playSound={this.context.playSound}
             />
           );
         })}
@@ -56,3 +35,4 @@ export default class CatalogPage extends React.Component {
     );
   }
 }
+CatalogPage.contextType = AppContext;

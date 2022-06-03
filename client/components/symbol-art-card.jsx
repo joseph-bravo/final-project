@@ -2,6 +2,7 @@ import React from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import propTypes from 'prop-types';
 import sounds from '../lib/sound-catalog.json';
+import { urlDownloadFromId } from '../lib/endpoints';
 
 function PlaceholderImage() {
   return (
@@ -32,7 +33,7 @@ export default function SymbolArtCard(props) {
 
   const { playSound } = props;
 
-  const downloadLink = `/api/posts/download?id=${postId}`;
+  const downloadLink = urlDownloadFromId(postId);
 
   return (
     <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">

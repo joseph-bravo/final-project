@@ -24,7 +24,6 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.static(publicPath));
 
 /**
- *
  * ? Get all post data.
  */
 app.get('/api/catalog', (req, res, next) => {
@@ -54,7 +53,6 @@ app.get('/api/catalog', (req, res, next) => {
 });
 
 /**
- *
  * ? Get post data limited with a limit to 20, provided the offset
  */
 app.get('/api/catalog/:offset', (req, res, next) => {
@@ -87,8 +85,52 @@ app.get('/api/catalog/:offset', (req, res, next) => {
 });
 
 /**
+ * ? Queries DB for single post and its details, like /api/catalog/ but single.
+ * * query:
+ * *    id: ID of post to search for
+ * * response:
+ * *    single row of data for post
+ * ? i.e. /api/posts/view?id=420
+ */
+app.get('/api/posts/view', (req, res, next) => {
+  const { id } = req.query;
+  const sql = `/* SQL */
+    with "tag_arrays" as (
+      select
+        "postId",
+        array_agg("tagName") as "tags"
+      from "taggings"
+      group by "postId"
+    )
+
+    select
+      "title", "description", "username",
+      "fileObjectKey", "previewImagePath",
+      "filePropsName", "filePropsSound", "filePropsLayerCount",
+      "postId", "userId", "p"."createdAt", "tags"
+    from "posts" as "p"
+    join "files" using ("fileId")
+    join "users" using ("userId")
+    join "tag_arrays" using ("postId")
+    where "postId" = $1;
+  `;
+  db.query(sql, [id])
+    .then(({ rows }) => {
+      if (!rows[0]) {
+        throw new ClientError(404, `unable to find entry with id: ${id}`);
+      }
+      res.json(rows);
+    })
+    .catch(err => next(err));
+});
+
+/**
  * ? Redirects to a download of the SAR file given the ID of post.
- * @QueryParam id - ID of the post to download.
+ * * query:
+ * *    id: ID of post to download
+ * * response:
+ * *    redirect to URL for download.
+ * ? i.e. /api/posts/download?id=420
  */
 app.get('/api/posts/download', (req, res, next) => {
   const { id } = req.query;
@@ -118,7 +160,6 @@ app.get('/api/posts/download', (req, res, next) => {
 });
 
 /**
- *
  * ? Handle uploads from forms on the path '/api/upload'
  */
 app.post(
