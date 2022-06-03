@@ -8,9 +8,11 @@ export default function SinglePostPage(props) {
   const apiPath = apiViewPostFromId(id);
   const [symbolArt, setSymbolArt] = useState();
 
-  fetch(apiPath)
-    .then(res => res.json())
-    .then(([symbolArtRes]) => setSymbolArt(symbolArtRes));
+  useEffect(() => {
+    fetch(apiPath)
+      .then(res => res.json())
+      .then(([symbolArtRes]) => setSymbolArt(symbolArtRes));
+  }, [id]);
 
   return <SymbolArtCard symbolArt={symbolArt} />;
 }
