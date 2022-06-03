@@ -16,7 +16,11 @@ export default function SinglePostSymbolArt(props) {
   const { playSound } = React.useContext(AppContext);
 
   if (!props.symbolArt) {
-    return;
+    return (
+      <div className="alert alert-error justify-center text-3xl font-bold">
+        <h2>Unable to find post with ID ({props.id})</h2>
+      </div>
+    );
   }
 
   const {

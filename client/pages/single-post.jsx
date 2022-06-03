@@ -11,8 +11,15 @@ export default function SinglePostPage(props) {
   useEffect(() => {
     fetch(apiPath)
       .then(res => res.json())
-      .then(([symbolArtRes]) => setSymbolArt(symbolArtRes));
+      .then(res => {
+        if (Object.keys(res)[0] === 'error') {
+          setSymbolArt(null);
+        } else {
+          const [symbolArtRes] = res;
+          setSymbolArt(symbolArtRes);
+        }
+      });
   }, [id]);
 
-  return <SinglePostSymbolArt symbolArt={symbolArt} />;
+  return <SinglePostSymbolArt symbolArt={symbolArt} id={id} />;
 }
