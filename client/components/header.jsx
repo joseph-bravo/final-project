@@ -1,27 +1,34 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, Routes, Route } from 'react-router-dom';
 
 export default function Header(props) {
-  const { pathname } = useLocation();
-  /**
-   * Key: Path
-   * Header: String to display on Header and Menu
-   */
-  const titles = {
-    '/': {
-      header: 'Symbol Vault'
+  const homeHeader = 'Symbol Art Vault';
+  const paths = [
+    {
+      path: 'upload',
+      header: 'New Post'
     },
-    '/upload': {
+    {
+      path: 'posts/:id',
+      header: 'Viewing Post'
+    },
+    {
+      path: '*',
+      header: '404: Not Found'
+    }
+  ];
+
+  const actions = [
+    {
+      path: 'upload',
       header: 'New Post'
     }
-  };
-
-  const actions = [titles['/upload']];
+  ];
 
   return (
     <header
-      className="navbar rounded-box sticky
-        top-4 mx-auto mb-8 flex w-11/12 max-w-3xl items-center
+      className="navbar rounded-box sticky top-4 z-10
+        mx-auto mb-8 flex w-11/12 max-w-3xl select-none items-center
         justify-center bg-primary px-4 text-primary-content shadow-md">
       <div className="justify-left flex-1 flex-shrink md:flex-none">
         <NavLink
@@ -35,7 +42,14 @@ export default function Header(props) {
 
       <div className="flex-auto justify-center md:justify-start md:px-4">
         <h1 className="text-center text-4xl font-black leading-none">
-          {titles[pathname].header}
+          <Routes>
+            <Route index element={<>{homeHeader}</>} />
+            {paths.map(e => {
+              return (
+                <Route key={e.path} path={e.path} element={<>{e.header}</>} />
+              );
+            })}
+          </Routes>
         </h1>
       </div>
 
@@ -70,7 +84,7 @@ export default function Header(props) {
           actions.map(action => (
             <NavLink
               key={action}
-              to="upload"
+              to={action.path}
               className={({ isActive }) =>
                 !isActive ? 'btn btn-primary text-xl lowercase' : 'hidden'
               }>
