@@ -166,7 +166,8 @@ app.get('/api/posts/search', (req, res, next) => {
     with "tag_arrays" as (
       select
         "postId",
-        array_to_string(array_agg("tagName"), ' ') as "tags"
+        array_agg("tagName") as "tags",
+        array_to_string(array_agg("tagName"), ' ') as "tagSearch"
       from "taggings"
       group by "postId"
     ), "posts_with_tags" as (
@@ -191,7 +192,7 @@ app.get('/api/posts/search', (req, res, next) => {
         ${
           columnsConfig.tags
             ? `/* SQL */
-            setweight(to_tsvector("tags"), 'C') ||`
+            setweight(to_tsvector("tagSearch"), 'C') ||`
             : ''
         }
         ${
@@ -212,7 +213,7 @@ app.get('/api/posts/search', (req, res, next) => {
       "title", "description", "username",
       "fileObjectKey", "previewImagePath",
       "filePropsName", "filePropsSound", "filePropsLayerCount",
-      "postId", "userId", "posts"."createdAt", "tags", "ranks"
+      "postId", "userId", "posts"."createdAt", "tag_arrays"."tags", "ranks"
     from "search_ranking"
     join "posts" using ("postId")
     join "files" using ("fileId")

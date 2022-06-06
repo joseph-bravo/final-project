@@ -9,6 +9,7 @@ export default class CatalogPage extends React.Component {
     this.state = {
       currentlyViewing: []
     };
+    this.setCatalog = this.setCatalog.bind(this);
   }
 
   componentDidMount() {
@@ -20,10 +21,14 @@ export default class CatalogPage extends React.Component {
       .catch(console.error);
   }
 
+  setCatalog(posts) {
+    this.setState({ currentlyViewing: posts });
+  }
+
   render() {
     return (
-      <div>
-        <SearchBar />
+      <div className="flex flex-col items-center gap-8">
+        <SearchBar setCatalog={this.setCatalog} />
         <div className="grid gap-4 sm:grid-cols-2">
           {this.state.currentlyViewing.map(symbolArt => {
             return (
