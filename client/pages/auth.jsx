@@ -171,9 +171,7 @@ function TextInput(props) {
 function ErrorAlert(props) {
   const { closeAlert, errorMessage } = props;
   return (
-    <div
-      className="rounded-box flex items-center justify-between bg-error p-4 text-error-content"
-      onClick={closeAlert}>
+    <div className="rounded-box flex items-center justify-between bg-error p-4 text-error-content">
       <div className="flex gap-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
