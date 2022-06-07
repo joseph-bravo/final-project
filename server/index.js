@@ -10,6 +10,9 @@ const ClientError = require('./client-error');
 const app = express();
 const publicPath = path.join(__dirname, 'public');
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -357,14 +360,15 @@ app.post(
   }
 );
 
-/**
- *
- * ? Serve index.html statically.
- */
-app.use((req, res) => {
-  res.sendFile('/index.html', {
-    root: path.join(__dirname, 'public')
+app.get('/posts/:id', (req, res) => {
+  res.render('index', {
+    title: 'bababooey'
   });
+});
+
+app.use((req, res) => {
+  console.log(req.path);
+  res.render('index');
 });
 
 app.use(errorMiddleware);
