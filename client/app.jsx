@@ -55,8 +55,14 @@ export default class App extends React.Component {
                 <Route path=":id" element={<SinglePostPage />} />
               </Route>
               <Route path="auth">
-                <Route path="sign-up" element={<AuthPage action="sign-up" />} />
-                <Route path="sign-in" element={<AuthPage action="sign-in" />} />
+                <Route
+                  path="sign-up"
+                  element={<AuthPage action="sign-up" key="sign-up" />}
+                />
+                <Route
+                  path="sign-in"
+                  element={<AuthPage action="sign-in" key="sign-in" />}
+                />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />
