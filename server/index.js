@@ -408,7 +408,9 @@ app.get('/posts/:id', (req, res, next) => {
 });
 
 app.use((req, res) => {
-  res.render('index');
+  res.render('index', {
+    title: 'Catalog'
+  });
 });
 
 app.use(errorMiddleware);
