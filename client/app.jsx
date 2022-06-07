@@ -12,7 +12,9 @@ import AuthPage from './pages/auth';
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      user: null
+    };
     this.playSound = this.playSound.bind(this);
     this.sounds = sounds.map(sound => {
       if (sound.path === '') return null;
