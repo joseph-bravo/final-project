@@ -12,16 +12,12 @@ import AuthPage from './pages/auth';
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      user: null
-    };
+    this.state = {};
     this.playSound = this.playSound.bind(this);
     this.sounds = sounds.map(sound => {
       if (sound.path === '') return null;
       return new Audio(`/res/${sound.path}`);
     });
-
-    this.setUser = this.setUser.bind(this);
   }
 
   playSound(index) {
@@ -42,14 +38,10 @@ export default class App extends React.Component {
     }
   }
 
-  setUser(user) {
-    this.setState({ user });
-  }
-
   render() {
     const context = {
-      user: this.state.user,
-      setState: this.setUser,
+      state: this.state,
+      setState: this.setState,
       playSound: this.playSound
     };
     return (
