@@ -393,7 +393,7 @@ app.post('/api/auth/sign-up', (req, res, next) => {
         rows: [newUser]
       } = reSQL;
       if (!newUser) {
-        res.sendStatus(409);
+        res.status(409).json({ error: 'username already taken' });
         return;
       }
       const { username, userId } = newUser;

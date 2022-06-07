@@ -35,7 +35,7 @@ export default function Header(props) {
     }
   };
 
-  if (!appContext.user) {
+  if (!appContext.state.user) {
     actions.signup = {
       path: 'auth/sign-up',
       header: 'sign up'

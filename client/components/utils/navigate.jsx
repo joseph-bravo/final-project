@@ -6,6 +6,6 @@ export default function Navigate(props) {
   const { to } = props;
   useEffect(() => {
     navigate(to);
-  });
+  }, [to]);
   return <></>;
 }

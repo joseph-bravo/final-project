@@ -242,7 +242,7 @@ export default class UploadPage extends React.Component {
 
                 </div>
 
-                <div className="rounded-box flex justify-center bg-base-f100 p-2">
+                <div className="rounded-box flex justify-center bg-base-100 p-2">
                   <button type="submit" className="btn btn-success btn-block">
                     Submit
                   </button>
