@@ -20,6 +20,8 @@ export default class App extends React.Component {
       if (sound.path === '') return null;
       return new Audio(`/res/${sound.path}`);
     });
+
+    this.setUser = this.setUser.bind(this);
   }
 
   playSound(index) {
@@ -40,10 +42,14 @@ export default class App extends React.Component {
     }
   }
 
+  setUser(user) {
+    this.setState({ user });
+  }
+
   render() {
     const context = {
-      state: this.state,
-      setState: this.setState,
+      user: this.state.user,
+      setState: this.setUser,
       playSound: this.playSound
     };
     return (
