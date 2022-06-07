@@ -73,7 +73,7 @@ export default class SearchBar extends React.Component {
 
   render() {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex min-w-full max-w-2xl flex-col items-center gap-2">
         <form onSubmit={this.handleSubmit}>
           <div className="rounded-box flex items-center gap-4 bg-base-100 px-4 py-2 shadow-sm">
             <div className="form-control w-full">
@@ -93,7 +93,7 @@ export default class SearchBar extends React.Component {
                 </button>
               </div>
             </div>
-            <div className="dropdown-end dropdown">
+            <div className="dropdown-end dropdown z-10">
               <label tabIndex="0" className="btn m-1">
                 options
               </label>
@@ -135,11 +135,11 @@ export default class SearchBar extends React.Component {
         {
           // prettier-ignore
           this.props.currentQuery
-            ? <div className='alert alert-info max-w-md py-2'>
+            ? <div className='w-full bg-info text-bg-info-content rounded-box flex items-center justify-between px-6 py-2'>
                   <div>
-                    <h2>showing matches for &quot;<span className="font-bold">{this.props.currentQuery}</span>&quot;</h2>
+                    <h2 className='break-all'>showing matches for &quot;<span className="font-bold">{this.props.currentQuery}</span>&quot;</h2>
                   </div>
-                  <button className='btn btn-circle btn-ghost' onClick={this.clearFormAndInitialize}><div className="material-icons">close</div></button>
+                  <button className='btn btn-circle btn-ghost' onClick={this.clearFormAndInitialize}><span className="material-icons">close</span></button>
                 </div>
             : <></>
         }
