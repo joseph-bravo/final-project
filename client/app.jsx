@@ -7,6 +7,7 @@ import sounds from './lib/sound-catalog.json';
 import AppContext from './lib/app-context';
 import SinglePostPage from './pages/single-post';
 import NotFoundPage from './pages/not-found';
+import AuthPage from './pages/auth';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -52,6 +53,11 @@ export default class App extends React.Component {
               <Route path="upload" element={<UploadPage />} />
               <Route path="posts">
                 <Route path=":id" element={<SinglePostPage />} />
+              </Route>
+              <Route path="auth">
+                <Route path="sign-up" element={<AuthPage action="sign-up" />} />
+                <Route path="sign-in" element={<AuthPage action="sign-in" />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Route>

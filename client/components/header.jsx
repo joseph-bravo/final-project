@@ -13,6 +13,14 @@ export default function Header(props) {
       header: 'Viewing Post'
     },
     {
+      path: 'auth/sign-up',
+      header: 'Sign Up'
+    },
+    {
+      path: 'auth/sign-in',
+      header: 'Sign In'
+    },
+    {
       path: '*',
       header: '404: Not Found'
     }
@@ -54,7 +62,7 @@ export default function Header(props) {
       </div>
 
       <div className="flex flex-1 justify-end md:hidden">
-        <div className="dropdown-end dropdown">
+        <div className="dropdown dropdown-end">
           <label tabIndex="0" className="btn btn-primary">
             <span className="material-icons">menu</span>
           </label>
