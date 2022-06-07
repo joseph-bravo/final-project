@@ -10,6 +10,9 @@ const ClientError = require('./client-error');
 const app = express();
 const publicPath = path.join(__dirname, 'public');
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -91,6 +94,9 @@ app.get('/api/posts/view/:id', (req, res, next) => {
   const { id } = req.params;
   if (Number.isNaN(Number(id))) {
     throw new ClientError(400, 'please provide a valid post ID (number)');
+  }
+  if (!(id >= 1) || !(id <= 2147483647)) {
+    throw new ClientError(400, 'integer out of bounds');
   }
   const sql = `/* SQL */
     with "tag_arrays" as (
@@ -237,6 +243,9 @@ app.get('/api/posts/download/:id', (req, res, next) => {
   if (Number.isNaN(Number(id))) {
     throw new ClientError(400, 'please provide a valid post ID (number)');
   }
+  if (!(id >= 1) || !(id <= 2147483647)) {
+    throw new ClientError(400, 'integer out of bounds');
+  }
   const sql = `/* SQL */
     select
       "fileObjectKey", "title"
@@ -357,14 +366,49 @@ app.post(
   }
 );
 
-/**
- *
- * ? Serve index.html statically.
- */
+app.get('/posts/:id', (req, res, next) => {
+  const { id } = req.params;
+  if (!(id >= 1) || !(id <= 2147483647)) {
+    res.render('index');
+  }
+  const sql = `/* SQL */
+    with "tag_arrays" as (
+      select
+        "postId",
+        array_agg("tagName") as "tags"
+      from "taggings"
+      group by "postId"
+    )
+
+    select
+      "title", "description", "username",
+      "fileObjectKey", "previewImagePath",
+      "filePropsName", "filePropsSound", "filePropsLayerCount",
+      "postId", "userId", "p"."createdAt", "tags"
+    from "posts" as "p"
+    join "files" using ("fileId")
+    join "users" using ("userId")
+    join "tag_arrays" using ("postId")
+    where "postId" = $1;
+  `;
+  db.query(sql, [id])
+    .then(({ rows: [post] }) => {
+      if (!post) {
+        next();
+        return;
+      }
+      const { title, description, previewImagePath: image } = post;
+      res.render('index', {
+        title,
+        description,
+        image
+      });
+    })
+    .catch(err => next(err));
+});
+
 app.use((req, res) => {
-  res.sendFile('/index.html', {
-    root: path.join(__dirname, 'public')
-  });
+  res.render('index');
 });
 
 app.use(errorMiddleware);
