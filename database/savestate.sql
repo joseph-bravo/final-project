@@ -16,6 +16,20 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -191,6 +205,11 @@ COPY public.files ("fileId", "fileObjectKey", "previewImagePath", "filePropsName
 8	22bdd967-d58e-46c6-96a2-21873ca42d9c.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/22bdd967-d58e-46c6-96a2-21873ca42d9c.png	ポプテピピックap	4	197
 9	9a7b3291-e3f5-4e82-88d0-ce28bc531264.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/9a7b3291-e3f5-4e82-88d0-ce28bc531264.png	イオ@照れ	1	216
 10	aea8f5a4-bd71-4971-86f0-e5ae10cb349b.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/aea8f5a4-bd71-4971-86f0-e5ae10cb349b.png	Eggman Announcement	4	167
+11	2c817420-295e-4589-8e13-69356aadfe53.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/2c817420-295e-4589-8e13-69356aadfe53.png	外人4コマA	0	177
+12	aa115cc0-c9e8-413c-89f2-cdce5573fd2f.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/aa115cc0-c9e8-413c-89f2-cdce5573fd2f.png	モニカ@しゃけ	11	190
+13	34fd821a-2009-4964-b9b8-b67b5647b043.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/34fd821a-2009-4964-b9b8-b67b5647b043.png	Paimon Munch	8	81
+14	3850fceb-5af4-4d5d-98fb-3f5c4085dd15.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/3850fceb-5af4-4d5d-98fb-3f5c4085dd15.png	Symbol Art	5	34
+15	45ac380b-cbdf-4dc0-8852-bbb6c8ca8fea.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/45ac380b-cbdf-4dc0-8852-bbb6c8ca8fea.png	Afin, mate!	3	208
 \.
 
 
@@ -209,6 +228,11 @@ COPY public.posts ("postId", "fileId", "userId", "createdAt", title, description
 8	8	1	2022-06-02 23:49:43.249282+00	Dudu Death	Pop Team Epic... kill dudu... rip guardian soul
 9	9	1	2022-06-03 17:44:41.523469+00	Io Cutie	what a cute gal...
 10	10	1	2022-06-03 23:22:42.028371+00	Eggman Announcement	I've come to make an announcement...
+11	11	1	2022-06-07 00:08:05.357028+00	HYPE HYPE HYPE	
+12	12	1	2022-06-07 00:08:42.39005+00	monica laugh	failed at 90%???
+13	13	1	2022-06-07 19:52:38.244189+00	Paimon Cookie	munch munch munch...
+14	14	1	2022-06-07 19:55:46.165852+00	man...	
+15	15	1	2022-06-07 19:55:59.209451+00	afin meme	
 \.
 
 
@@ -247,6 +271,13 @@ cute	9
 sa2	10
 sonic	10
 meme	10
+meme	11
+monica	12
+pso2	12
+affix	12
+genshin	13
+	14
+	15
 \.
 
 
@@ -277,6 +308,9 @@ oracle
 cute
 sa2
 sonic
+monica
+genshin
+
 \.
 
 
@@ -293,21 +327,21 @@ COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin
 -- Name: files_fileId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."files_fileId_seq"', 10, true);
+SELECT pg_catalog.setval('public."files_fileId_seq"', 15, true);
 
 
 --
 -- Name: posts_postId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."posts_postId_seq"', 10, true);
+SELECT pg_catalog.setval('public."posts_postId_seq"', 15, true);
 
 
 --
 -- Name: users_userId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."users_userId_seq"', 1, true);
+SELECT pg_catalog.setval('public."users_userId_seq"', 23, true);
 
 
 --

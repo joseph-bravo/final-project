@@ -2,10 +2,11 @@ require('dotenv/config');
 const path = require('path');
 const express = require('express');
 const pg = require('pg');
+const argon2 = require('argon2');
 const errorMiddleware = require('./error-middleware');
 const { upload, download } = require('./s3-middleware');
-const { randomUUID } = require('crypto');
 const ClientError = require('./client-error');
+const middlewareGenUUID = require('./uuid-to-req-middleware');
 
 const app = express();
 const publicPath = path.join(__dirname, 'public');
@@ -25,6 +26,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(express.static(publicPath));
+
+app.use(express.json());
 
 /**
  * ? Get all post data.
@@ -273,10 +276,7 @@ app.get('/api/posts/download/:id', (req, res, next) => {
  */
 app.post(
   '/api/upload',
-  (req, res, next) => {
-    req.fileName = randomUUID();
-    next();
-  },
+  middlewareGenUUID,
   upload.fields([
     { name: 'sar', maxCount: 1 },
     { name: 'thumbnail', maxCount: 1 }
@@ -365,6 +365,39 @@ app.post(
       });
   }
 );
+
+/**
+ * ? Handle auth signup
+ * @JSONBody - username: string. password: string
+ */
+app.post('/api/auth/sign-up', (req, res, next) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    throw new ClientError(400, 'username and password are required fields');
+  }
+  const hashedPassword = argon2.hash(password);
+  const sql = `/* SQL */
+    insert into "users" ("username", "hashedPassword")
+    values ($1, $2)
+    on conflict ("username")
+    do nothing
+    returning "userId", "username"
+    ;
+  `;
+  db.query(sql, [username, hashedPassword])
+    .then(reSQL => {
+      const {
+        rows: [newUser]
+      } = reSQL;
+      if (!newUser) {
+        res.sendStatus(409);
+        return;
+      }
+      const { username, userId } = newUser;
+      res.status(201).json({ username, userId });
+    })
+    .catch(err => next(err));
+});
 
 app.get('/posts/:id', (req, res, next) => {
   const { id } = req.params;
