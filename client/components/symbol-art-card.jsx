@@ -54,7 +54,7 @@ export default function SymbolArtCard(props) {
           </div>
           {
             // prettier-ignore
-            filePropsSound !== 1
+            filePropsSound > 1
               ? (
             <button
               className="btn btn-outline btn-xs gap-2 rounded-full text-sm font-semibold"

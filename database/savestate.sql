@@ -189,6 +189,8 @@ COPY public.files ("fileId", "fileObjectKey", "previewImagePath", "filePropsName
 6	fde5ca0a-61af-4e8b-8779-2b8fe3f177c0.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/fde5ca0a-61af-4e8b-8779-2b8fe3f177c0.png	@Pikaboi 2021-02-21	11	78
 7	5e81629a-6495-4092-9336-22155c7bdeec.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/5e81629a-6495-4092-9336-22155c7bdeec.png	僕と勝負するニャ…	4	149
 8	22bdd967-d58e-46c6-96a2-21873ca42d9c.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/22bdd967-d58e-46c6-96a2-21873ca42d9c.png	ポプテピピックap	4	197
+9	9a7b3291-e3f5-4e82-88d0-ce28bc531264.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/9a7b3291-e3f5-4e82-88d0-ce28bc531264.png	イオ@照れ	1	216
+10	aea8f5a4-bd71-4971-86f0-e5ae10cb349b.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/aea8f5a4-bd71-4971-86f0-e5ae10cb349b.png	Eggman Announcement	4	167
 \.
 
 
@@ -205,6 +207,8 @@ COPY public.posts ("postId", "fileId", "userId", "createdAt", title, description
 6	6	1	2022-06-02 23:48:24.358375+00	rappy my beloved	
 7	7	1	2022-06-02 23:48:51.605105+00	Rappy Punch Nyau	kill.... kill!!!
 8	8	1	2022-06-02 23:49:43.249282+00	Dudu Death	Pop Team Epic... kill dudu... rip guardian soul
+9	9	1	2022-06-03 17:44:41.523469+00	Io Cutie	what a cute gal...
+10	10	1	2022-06-03 23:22:42.028371+00	Eggman Announcement	I've come to make an announcement...
 \.
 
 
@@ -237,6 +241,12 @@ pso2	8
 potepipi	8
 gaming	8
 affix	8
+pso2	9
+oracle	9
+cute	9
+sa2	10
+sonic	10
+meme	10
 \.
 
 
@@ -263,6 +273,10 @@ dudu
 potepipi
 gaming
 affix
+oracle
+cute
+sa2
+sonic
 \.
 
 
@@ -279,14 +293,14 @@ COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin
 -- Name: files_fileId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."files_fileId_seq"', 8, true);
+SELECT pg_catalog.setval('public."files_fileId_seq"', 10, true);
 
 
 --
 -- Name: posts_postId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."posts_postId_seq"', 8, true);
+SELECT pg_catalog.setval('public."posts_postId_seq"', 10, true);
 
 
 --

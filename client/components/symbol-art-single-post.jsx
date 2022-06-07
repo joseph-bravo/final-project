@@ -68,7 +68,7 @@ export default function SinglePostSymbolArt(props) {
           </div>
           {
             // prettier-ignore
-            filePropsSound !== 1
+            filePropsSound > 1
               ? (
             <button
               className="btn btn-outline btn-sm gap-2 rounded-full text-lg font-bold"
