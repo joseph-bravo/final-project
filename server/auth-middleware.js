@@ -9,13 +9,9 @@ module.exports = function authMiddleware(req, res, next) {
     return;
   }
 
-  try {
-    // * Payload: {userId, username}
-    const { userId } = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.userId = userId;
-  } catch (error) {
-    throw new JsonWebTokenError();
-  }
+  // * Payload: {userId, username}
+  const { userId } = jwt.verify(token, process.env.TOKEN_SECRET);
+  req.userId = userId;
 
   next();
 };
