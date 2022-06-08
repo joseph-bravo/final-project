@@ -319,7 +319,7 @@ genshin
 --
 
 COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin;
-1	admin	fakepassword	2022-06-02 23:40:22.180351+00
+1	bababooey	$argon2i$v=19$m=4096,t=3,p=1$PvR3TSLtjv1M7d8hYlsnTw$06InRxBtrH639O80gXeErhliAKcpSAJ+I4fg4TZ/fRk	2022-06-02 23:40:22.180351+00
 \.
 
 
@@ -341,7 +341,7 @@ SELECT pg_catalog.setval('public."posts_postId_seq"', 15, true);
 -- Name: users_userId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."users_userId_seq"', 23, true);
+SELECT pg_catalog.setval('public."users_userId_seq"', 95, true);
 
 
 --
