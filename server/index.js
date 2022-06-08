@@ -394,8 +394,7 @@ app.post('/api/auth/sign-up', (req, res, next) => {
         rows: [newUser]
       } = reSQL;
       if (!newUser) {
-        res.status(409).json({ error: 'username already taken' });
-        return;
+        throw new ClientError(409, 'username already taken');
       }
       const { username, userId } = newUser;
       res.status(201).json({ username, userId });
@@ -423,8 +422,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
         rows: [user]
       } = reSQL;
       if (!user) {
-        res.status(401).json({ error: 'invalid login' });
-        return;
+        throw new ClientError(401, 'invalid login');
       }
       const { hashedPassword, userId, username } = user;
       return Promise.all([
@@ -432,13 +430,10 @@ app.post('/api/auth/sign-in', (req, res, next) => {
         argon2.verify(hashedPassword, password)
       ]);
     })
-    .then(([userData, isVerified]) => {
+    .then(([payload, isVerified]) => {
       if (!isVerified) {
-        res.status(401).json({ error: 'invalid login' });
-        return;
+        throw new ClientError(401, 'invalid login');
       }
-      const { username, userId } = userData;
-      const payload = { username, userId };
       const token = jwt.sign(payload, process.env.TOKEN_SECRET);
       res.json({ token, user: payload });
     })
