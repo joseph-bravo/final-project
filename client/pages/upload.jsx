@@ -2,6 +2,7 @@ import React from 'react';
 import Navigate from '../components/utils/navigate';
 import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
+import AppContext from '../lib/app-context';
 
 const descriptionCharLimit = 90;
 const titleCharLimit = 25;
@@ -89,7 +90,10 @@ export default class UploadPage extends React.Component {
 
         return fetch('/api/upload', {
           method: 'POST',
-          body: formData
+          body: formData,
+          headers: {
+            'X-Access-Token': this.context.userToken
+          }
         });
       })
       .then(res => res.json())
@@ -255,6 +259,7 @@ export default class UploadPage extends React.Component {
     );
   }
 }
+UploadPage.contextType = AppContext;
 
 function TextInput(props) {
   const { remainingCharacters, totalCharacters } = props;
