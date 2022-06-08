@@ -8,6 +8,7 @@ const errorMiddleware = require('./error-middleware');
 const { upload, download } = require('./s3-middleware');
 const ClientError = require('./client-error');
 const middlewareGenUUID = require('./uuid-to-req-middleware');
+const authMiddleware = require('./auth-middleware');
 
 const app = express();
 const publicPath = path.join(__dirname, 'public');
@@ -277,12 +278,18 @@ app.get('/api/posts/download/:id', (req, res, next) => {
  */
 app.post(
   '/api/upload',
+  authMiddleware,
   middlewareGenUUID,
   upload.fields([
     { name: 'sar', maxCount: 1 },
     { name: 'thumbnail', maxCount: 1 }
   ]),
   (req, res, next) => {
+    // * Anonymous post check
+    if (req.userId === null) {
+      req.userId = 1;
+    }
+
     const { sar, thumbnail } = req.files;
 
     const paths = {
@@ -315,9 +322,9 @@ app.post(
       insert into "posts" ("fileId", "userId", "title", "description")
         select
           "fileId",
-          1,
           $6,
-          $7
+          $7,
+          $8
         from
           "new_file"
         returning
@@ -328,7 +335,7 @@ app.post(
         select
           *
         from
-          unnest($8::text[])
+          unnest($9::text[])
         on conflict ("tagName")
           do nothing
       ),
@@ -336,7 +343,7 @@ app.post(
       insert into "taggings" ("postId", "tagName")
         select
           "postId",
-          unnest($8::text[]) as "tagName"
+          unnest($9::text[]) as "tagName"
         from
           "new_post"
         returning
@@ -355,6 +362,7 @@ app.post(
       filePropsSound,
       filePropsName,
       filePropsLayerCount,
+      req.userId,
       title,
       description,
       tags
