@@ -242,7 +242,7 @@ export default class UploadPage extends React.Component {
 
                 </div>
 
-                <div className="rounded-box flex justify-center bg-base-f100 p-2">
+                <div className="rounded-box flex justify-center bg-base-100 p-2">
                   <button type="submit" className="btn btn-success btn-block">
                     Submit
                   </button>
@@ -299,9 +299,7 @@ function TextInput(props) {
 function ErrorAlert(props) {
   const closeAlert = props.closeAlert;
   return (
-    <div
-      className="rounded-box flex items-center justify-between bg-error p-4 text-error-content"
-      onClick={closeAlert}>
+    <div className="rounded-box flex items-center justify-between bg-error p-4 text-error-content">
       <div className="flex gap-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"

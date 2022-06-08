@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink, Routes, Route } from 'react-router-dom';
+import AppContext from '../lib/app-context';
 
 export default function Header(props) {
+  const appContext = useContext(AppContext);
   const homeHeader = 'Symbol Art Vault';
   const paths = [
     {
@@ -13,17 +15,54 @@ export default function Header(props) {
       header: 'Viewing Post'
     },
     {
+      path: 'auth/sign-up',
+      header: 'Sign Up'
+    },
+    {
+      path: 'auth/sign-in',
+      header: 'Sign In'
+    },
+    {
       path: '*',
       header: '404: Not Found'
     }
   ];
 
-  const actions = [
-    {
+  const actions = {
+    upload: {
       path: 'upload',
-      header: 'New Post'
+      header: 'new post'
     }
-  ];
+  };
+
+  if (!appContext.state.user) {
+    actions.signup = {
+      path: 'auth/sign-up',
+      header: 'sign up'
+    };
+    actions.signin = {
+      path: 'auth/sign-in',
+      header: 'sign in'
+    };
+  }
+
+  const getActionElements = () => {
+    const out = [];
+    for (const prop in actions) {
+      const action = actions[prop];
+      out.push(
+        <NavLink
+          key={action.path}
+          to={action.path}
+          className={({ isActive }) =>
+            !isActive ? 'btn btn-primary text-xl lowercase' : 'hidden'
+          }>
+          {action.header}
+        </NavLink>
+      );
+    }
+    return out;
+  };
 
   return (
     <header
@@ -60,39 +99,14 @@ export default function Header(props) {
           </label>
           <ul
             tabIndex="0"
-            className="dropdown-content menu rounded-box mt-4 w-52 bg-primary-focus p-2 shadow">
-            {
-              // prettier-ignore
-              actions.map(action => (
-                <NavLink
-                  key={action}
-                  to="upload"
-                  className={({ isActive }) =>
-                    !isActive ? 'btn btn-primary text-xl lowercase' : 'hidden'
-                  }>
-                  {action.header}
-                </NavLink>
-              ))
-            }
+            className="dropdown-content menu rounded-box mt-4 w-52 gap-2 bg-primary-focus p-2 shadow">
+            {getActionElements()}
           </ul>
         </div>
       </div>
 
       <ul className="hidden flex-1 justify-end md:flex">
-        {
-          // prettier-ignore
-          actions.map(action => (
-            <NavLink
-              key={action}
-              to={action.path}
-              className={({ isActive }) =>
-                !isActive ? 'btn btn-primary text-xl lowercase' : 'hidden'
-              }>
-              {action.header}
-          </NavLink>
-          ))
-        }
-        <li></li>
+        {getActionElements()}
       </ul>
     </header>
   );
