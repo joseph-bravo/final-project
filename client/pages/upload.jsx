@@ -92,7 +92,7 @@ export default class UploadPage extends React.Component {
           method: 'POST',
           body: formData,
           headers: {
-            'X-Access-Token': this.context.userToken
+            'X-Access-Token': this.context.userToken ? this.context.userToken : ''
           }
         });
       })
