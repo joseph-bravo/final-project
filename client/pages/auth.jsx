@@ -42,16 +42,32 @@ export default class AuthPage extends React.Component {
           .then(res => res.json())
           .then(res => {
             if (res.error === 'username already taken') {
-              this.openAlert('Username is already taken.');
-              return;
+              throw new Error('Username is already taken.');
             }
             // eslint-disable-next-line no-console
             console.log('new user details', res);
             this.successfulRegister = true;
             this.clearForm();
-          });
+          })
+          .catch(err => this.openAlert(err.message));
         break;
       case 'sign-in':
+        fetch('/api/auth/sign-in', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.error === 'invalid login') {
+              throw new Error('invalid login!');
+            }
+            this.context.login(res.token);
+            this.successfulSignup = true;
+          })
+          .catch(err => this.openAlert(err.message));
         break;
     }
   }
@@ -72,6 +88,11 @@ export default class AuthPage extends React.Component {
     if (this.successfulRegister) {
       this.successfulRegister = false;
       return <Navigate to="../sign-in" />;
+    }
+
+    if (this.successfulSignup) {
+      this.successfulSignup = false;
+      return <Navigate to="/" />;
     }
 
     const { action } = this.props;

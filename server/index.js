@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const pg = require('pg');
 const argon2 = require('argon2');
+const jwt = require('jsonwebtoken');
 const errorMiddleware = require('./error-middleware');
 const { upload, download } = require('./s3-middleware');
 const ClientError = require('./client-error');
@@ -393,11 +394,48 @@ app.post('/api/auth/sign-up', (req, res, next) => {
         rows: [newUser]
       } = reSQL;
       if (!newUser) {
-        res.status(409).json({ error: 'username already taken' });
-        return;
+        throw new ClientError(409, 'username already taken');
       }
       const { username, userId } = newUser;
       res.status(201).json({ username, userId });
+    })
+    .catch(err => next(err));
+});
+
+/**
+ * ? Handle auth signin
+ * @JSONBody - username: string. password: string
+ */
+app.post('/api/auth/sign-in', (req, res, next) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    throw new ClientError(400, 'username and password are required fields');
+  }
+  const sql = `/* SQL */
+    select *
+    from "users"
+    where "username" = $1;
+  `;
+  db.query(sql, [username])
+    .then(reSQL => {
+      const {
+        rows: [user]
+      } = reSQL;
+      if (!user) {
+        throw new ClientError(401, 'invalid login');
+      }
+      const { hashedPassword, userId, username } = user;
+      return Promise.all([
+        { userId, username },
+        argon2.verify(hashedPassword, password)
+      ]);
+    })
+    .then(([payload, isVerified]) => {
+      if (!isVerified) {
+        throw new ClientError(401, 'invalid login');
+      }
+      const token = jwt.sign(payload, process.env.TOKEN_SECRET);
+      res.json({ token, user: payload });
     })
     .catch(err => next(err));
 });
