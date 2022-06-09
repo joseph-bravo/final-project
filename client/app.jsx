@@ -15,7 +15,8 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       userToken: null,
-      username: null
+      username: null,
+      userId: null
     };
     this.playSound = this.playSound.bind(this);
     this.sounds = sounds.map(sound => {
@@ -36,11 +37,11 @@ export default class App extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.userToken !== this.state.userToken) {
       if (!this.state.userToken) {
-        this.setState({ username: null });
+        this.setState({ username: null, userId: null });
         return;
       }
-      const { username } = jwtDecode(this.state.userToken);
-      this.setState({ username });
+      const { username, userId } = jwtDecode(this.state.userToken);
+      this.setState({ username, userId });
     }
   }
 

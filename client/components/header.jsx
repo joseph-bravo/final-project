@@ -1,12 +1,16 @@
 import React, { useContext, useState } from 'react';
-import { NavLink, Routes, Route } from 'react-router-dom';
+import { NavLink, Routes, Route, useNavigate } from 'react-router-dom';
 import AppContext from '../lib/app-context';
+import { pathUserFromUserId } from '../lib/endpoints';
 import DaisyModal from './daisy-modal';
 
 export default function Header(props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const appContext = useContext(AppContext);
+  const navigate = useNavigate();
+
   const homeHeader = 'Symbol Art Vault';
+  const userPath = pathUserFromUserId(appContext.userId);
   const paths = [
     {
       path: 'upload',
@@ -93,6 +97,14 @@ export default function Header(props) {
           </div>
           <div className="modal-action">
             <button
+              className="btn btn-info"
+              onClick={() => {
+                navigate(userPath);
+                setIsModalOpen(false);
+              }}>
+              view posts
+            </button>
+            <button
               className="btn btn-error"
               onClick={() => {
                 appContext.logout();
@@ -131,7 +143,7 @@ export default function Header(props) {
         </div>
 
         <div className="flex flex-1 justify-end md:hidden">
-          <div className="dropdown dropdown-end">
+          <div className="dropdown-end dropdown">
             <label tabIndex="0" className="btn btn-primary">
               <span className="material-icons">menu</span>
             </label>
