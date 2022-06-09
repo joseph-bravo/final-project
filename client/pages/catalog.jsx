@@ -11,13 +11,16 @@ class CatalogPage extends React.Component {
       currentlyViewing: [],
       showingMatchesFor: '',
       userid: null,
-      username: null
+      username: null,
+      loading: true
     };
     this.setCatalog = this.setCatalog.bind(this);
     this.initializeCatalog = this.initializeCatalog.bind(this);
   }
 
   componentDidMount() {
+    const { userid } = this.props.router.params;
+    this.setState({ userid });
     this.initializeCatalog();
   }
 
@@ -36,32 +39,37 @@ class CatalogPage extends React.Component {
           if (Object.keys(res)[0] === 'error') {
             this.setState({
               currentlyViewing: [],
-              username: null
+              username: null,
+              loading: false
             });
             return;
           }
           this.setState({
             currentlyViewing: res.posts ? res.posts : [],
-            username: res.username
+            username: res.username,
+            loading: false
           });
         });
-      return;
+    } else {
+      fetch('/api/catalog')
+        .then(res => res.json())
+        .then(res => {
+          this.setCatalog(res);
+        })
+        .catch(console.error);
     }
-
-    fetch('/api/catalog')
-      .then(res => res.json())
-      .then(res => {
-        this.setCatalog(res);
-      })
-      .catch(console.error);
   }
 
   setCatalog(posts, currentQuery) {
-    this.setState({ currentlyViewing: posts, currentQuery });
+    this.setState({ currentlyViewing: posts, currentQuery, loading: false });
   }
 
   render() {
-    if (this.state.userid && this.state.username === null) {
+    if (
+      this.state.userid &&
+      this.state.username === null &&
+      !this.state.loading
+    ) {
       return (
         <div className="alert alert-error justify-center text-3xl font-bold">
           <h2>Unable to find user with ID ({this.state.userid})</h2>
@@ -96,7 +104,7 @@ class CatalogPage extends React.Component {
         </div>
         {
           // prettier-ignore
-          !(this.state.currentlyViewing.length > 0)
+          (!(this.state.currentlyViewing.length > 0) && !this.state.loading)
             ? <div className="alert alert-warning w-fit font-semibold text-xl">unable to find any posts.</div>
             : null
         }
