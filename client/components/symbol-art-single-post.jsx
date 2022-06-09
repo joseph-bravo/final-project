@@ -1,6 +1,7 @@
 import React from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { apiDownloadPostFromId } from '../lib/endpoints';
+import { Link } from 'react-router-dom';
+import { apiDownloadPostFromId, pathUserFromUserId } from '../lib/endpoints';
 import AppContext from '../lib/app-context';
 import sounds from '../lib/sound-catalog.json';
 import PlaceholderImage from './placeholder-image';
@@ -34,12 +35,14 @@ export default function SinglePostSymbolArt(props) {
     previewImagePath,
     tags,
     username,
+    userId,
     filePropsSound,
     filePropsName,
     filePropsLayerCount
   } = props.symbolArt;
 
   const downloadLink = apiDownloadPostFromId(postId);
+  const userLink = pathUserFromUserId(userId);
 
   const handleShareLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -83,7 +86,9 @@ export default function SinglePostSymbolArt(props) {
       </div>
       <div className="flex flex-col gap-2">
         <h3 className="break-words break-all text-4xl font-bold ">{title}</h3>
-        <h4 className="text-xl font-semibold">@{username}</h4>
+        <Link to={userLink}>
+          <h4 className="link-hover text-xl font-semibold">@{username}</h4>
+        </Link>
         <p className="text-lg">{description}</p>
       </div>
       <ul className="flex flex-wrap gap-2">

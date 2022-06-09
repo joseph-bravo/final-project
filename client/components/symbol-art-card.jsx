@@ -2,7 +2,11 @@ import React from 'react';
 import propTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { apiDownloadPostFromId, pathPostFromId } from '../lib/endpoints';
+import {
+  apiDownloadPostFromId,
+  pathPostFromId,
+  pathUserFromUserId
+} from '../lib/endpoints';
 import AppContext from '../lib/app-context';
 import sounds from '../lib/sound-catalog.json';
 import Tag from './tag';
@@ -28,12 +32,14 @@ export default function SymbolArtCard(props) {
     previewImagePath,
     tags,
     username,
+    userId,
     filePropsSound,
     filePropsName
   } = props.symbolArt;
 
   const downloadLink = apiDownloadPostFromId(postId);
   const postLink = pathPostFromId(postId);
+  const userLink = pathUserFromUserId(userId);
 
   return (
     <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
@@ -75,7 +81,9 @@ export default function SymbolArtCard(props) {
             </h3>
           </Link>
         </div>
-        <h4 className="text-sm font-semibold">@{username}</h4>
+        <Link to={userLink}>
+          <h4 className="link-hover text-sm font-semibold">@{username}</h4>
+        </Link>
         <p className="text-sm">{description}</p>
       </div>
       <ul className="flex flex-wrap gap-2">

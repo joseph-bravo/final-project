@@ -27,6 +27,10 @@ export default function Header(props) {
     {
       path: '*',
       header: '404: Not Found'
+    },
+    {
+      path: 'user/:userid',
+      header: 'Viewing User'
     }
   ];
 
@@ -127,7 +131,7 @@ export default function Header(props) {
         </div>
 
         <div className="flex flex-1 justify-end md:hidden">
-          <div className="dropdown-end dropdown">
+          <div className="dropdown dropdown-end">
             <label tabIndex="0" className="btn btn-primary">
               <span className="material-icons">menu</span>
             </label>

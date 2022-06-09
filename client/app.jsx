@@ -89,6 +89,9 @@ export default class App extends React.Component {
               <Route path="posts">
                 <Route path=":id" element={<SinglePostPage />} />
               </Route>
+              <Route path="user">
+                <Route path=":userid" element={<CatalogPage />} />
+              </Route>
               <Route path="auth">
                 <Route
                   path="sign-up"

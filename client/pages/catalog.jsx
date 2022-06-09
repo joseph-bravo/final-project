@@ -2,13 +2,17 @@ import React from 'react';
 import SymbolArtCard from '../components/symbol-art-card';
 import AppContext from '../lib/app-context';
 import SearchBar from '../components/search-bar';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
-export default class CatalogPage extends React.Component {
+class CatalogPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       currentlyViewing: [],
-      showingMatchesFor: ''
+      showingMatchesFor: '',
+      userid: this.props.router.params.userid
+        ? this.props.router.params.userid
+        : null
     };
     this.setCatalog = this.setCatalog.bind(this);
     this.initializeCatalog = this.initializeCatalog.bind(this);
@@ -59,3 +63,16 @@ export default class CatalogPage extends React.Component {
   }
 }
 CatalogPage.contextType = AppContext;
+
+function withRouter(Component) {
+  function ComponentWithRouterProp(props) {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const params = useParams();
+    return <Component {...props} router={{ location, navigate, params }} />;
+  }
+
+  return ComponentWithRouterProp;
+}
+
+export default withRouter(CatalogPage);
