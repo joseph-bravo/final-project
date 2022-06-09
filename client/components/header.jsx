@@ -1,12 +1,16 @@
 import React, { useContext, useState } from 'react';
-import { NavLink, Routes, Route } from 'react-router-dom';
+import { NavLink, Routes, Route, useNavigate } from 'react-router-dom';
 import AppContext from '../lib/app-context';
+import { pathUserFromUserId } from '../lib/endpoints';
 import DaisyModal from './daisy-modal';
 
 export default function Header(props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const appContext = useContext(AppContext);
+  const navigate = useNavigate();
+
   const homeHeader = 'Symbol Art Vault';
+  const userPath = pathUserFromUserId(appContext.userId);
   const paths = [
     {
       path: 'upload',
@@ -27,6 +31,10 @@ export default function Header(props) {
     {
       path: '*',
       header: '404: Not Found'
+    },
+    {
+      path: 'user/:userid',
+      header: 'Viewing User'
     }
   ];
 
@@ -88,6 +96,14 @@ export default function Header(props) {
             <h3>logged in as @{appContext.username}</h3>
           </div>
           <div className="modal-action">
+            <button
+              className="btn btn-info"
+              onClick={() => {
+                navigate(userPath);
+                setIsModalOpen(false);
+              }}>
+              view posts
+            </button>
             <button
               className="btn btn-error"
               onClick={() => {

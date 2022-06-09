@@ -17,12 +17,11 @@ export default function SinglePostPage(props) {
         if (Object.keys(res)[0] === 'error') {
           setSymbolArt(null);
         } else {
-          const [symbolArtRes] = res;
-          setSymbolArt(symbolArtRes);
+          setSymbolArt(res);
         }
         setLoading(false);
       });
-  }, [id]);
+  }, [apiPath]);
 
   return (
     <SinglePostSymbolArt loading={loading} symbolArt={symbolArt} id={id} />
