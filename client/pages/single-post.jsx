@@ -22,7 +22,7 @@ export default function SinglePostPage(props) {
         }
         setLoading(false);
       });
-  }, [id]);
+  }, [apiPath]);
 
   return (
     <SinglePostSymbolArt loading={loading} symbolArt={symbolArt} id={id} />
