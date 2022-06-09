@@ -93,6 +93,60 @@ app.get('/api/catalog/:offset', (req, res, next) => {
 });
 
 /**
+ * ? Queries DB for catalog but limits to userId param
+ */
+app.get('/api/catalog/user/:userId', (req, res, next) => {
+  const { userId } = req.params;
+  if (Number.isNaN(Number(userId))) {
+    throw new ClientError(400, 'please provide a valid post ID (number)');
+  }
+  if (!(userId >= 1) || !(userId <= 2147483647)) {
+    throw new ClientError(400, 'integer out of bounds');
+  }
+  const sql = `/* SQL */
+    with "tag_arrays" as (
+      select
+        "postId",
+        array_agg("tagName") as "tags"
+      from "taggings"
+      group by "postId"
+    ), "formatted_posts" as (
+      select
+        "title", "description", "username",
+        "fileObjectKey", "previewImagePath",
+        "filePropsName", "filePropsSound", "filePropsLayerCount",
+        "postId", "userId", "p"."createdAt", "tags"
+      from "posts" as "p"
+      join "files" using ("fileId")
+      join "users" using ("userId")
+      join "tag_arrays" using ("postId")
+      order by "p"."createdAt" desc
+    ), "jsonify" as (
+      select json_agg("formatted_posts".*), "users"."userId"
+      from "users"
+      join "formatted_posts" using ("userId")
+      group by "users"."userId"
+    )
+
+    select
+      "username",
+      "userId",
+      "jsonify"."json_agg" as "posts"
+    from "users"
+    left join "jsonify" using ("userId")
+    where "userId" = $1;
+  `;
+  db.query(sql, [userId])
+    .then(({ rows: [user] }) => {
+      if (!user) {
+        throw new ClientError(404, `unable to find user with id: ${userId}`);
+      }
+      res.json(user);
+    })
+    .catch(err => next(err));
+});
+
+/**
  * ? Queries DB for single post and its details, like /api/catalog/ but single.
  */
 app.get('/api/posts/view/:id', (req, res, next) => {
@@ -124,11 +178,11 @@ app.get('/api/posts/view/:id', (req, res, next) => {
     where "postId" = $1;
   `;
   db.query(sql, [id])
-    .then(({ rows }) => {
-      if (!rows[0]) {
+    .then(({ rows: [entry] }) => {
+      if (!entry) {
         throw new ClientError(404, `unable to find entry with id: ${id}`);
       }
-      res.json(rows);
+      res.json(entry);
     })
     .catch(err => next(err));
 });
@@ -448,6 +502,9 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .catch(err => next(err));
 });
 
+/**
+ * ? Render page for route /posts/:id
+ */
 app.get('/posts/:id', (req, res, next) => {
   const { id } = req.params;
   if (!(id >= 1) || !(id <= 2147483647)) {
