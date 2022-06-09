@@ -10,9 +10,7 @@ class CatalogPage extends React.Component {
     this.state = {
       currentlyViewing: [],
       showingMatchesFor: '',
-      userid: this.props.router.params.userid
-        ? this.props.router.params.userid
-        : null,
+      userid: null,
       username: null
     };
     this.setCatalog = this.setCatalog.bind(this);
@@ -21,6 +19,13 @@ class CatalogPage extends React.Component {
 
   componentDidMount() {
     this.initializeCatalog();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.userid !== this.props.router.params.userid) {
+      this.setState({ userid: this.props.router.params.userid });
+      this.initializeCatalog();
+    }
   }
 
   initializeCatalog() {
