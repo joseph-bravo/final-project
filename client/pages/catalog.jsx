@@ -26,12 +26,16 @@ class CatalogPage extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.userid !== this.props.router.params.userid) {
-      this.setState({ userid: this.props.router.params.userid });
+      this.setState({
+        userid: this.props.router.params.userid,
+        username: null
+      });
       this.initializeCatalog();
     }
   }
 
   initializeCatalog() {
+    this.setState({ loading: true });
     if (this.state.userid) {
       fetch(`/api/catalog/user/${this.state.userid}`)
         .then(res => res.json())
@@ -65,11 +69,7 @@ class CatalogPage extends React.Component {
   }
 
   render() {
-    if (
-      this.state.userid &&
-      this.state.username === null &&
-      !this.state.loading
-    ) {
+    if (this.state.userid && !this.state.username && !this.state.loading) {
       return (
         <div className="alert alert-error justify-center text-3xl font-bold">
           <h2>Unable to find user with ID ({this.state.userid})</h2>
