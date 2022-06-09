@@ -28,14 +28,14 @@ class CatalogPage extends React.Component {
     if (prevState.userid !== this.props.router.params.userid) {
       this.setState({
         userid: this.props.router.params.userid,
-        username: null
+        username: null,
+        loading: true
       });
       this.initializeCatalog();
     }
   }
 
   initializeCatalog() {
-    this.setState({ loading: true });
     if (this.state.userid) {
       fetch(`/api/catalog/user/${this.state.userid}`)
         .then(res => res.json())
