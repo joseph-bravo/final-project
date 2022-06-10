@@ -9,6 +9,7 @@ const { upload, download } = require('./s3-middleware');
 const ClientError = require('./client-error');
 const middlewareGenUUID = require('./uuid-to-req-middleware');
 const authMiddleware = require('./auth-middleware');
+const postSchema = require('../shared/post-schema');
 
 const app = express();
 const publicPath = path.join(__dirname, 'public');
@@ -52,7 +53,7 @@ app.get('/api/catalog', (req, res, next) => {
     from "posts" as "p"
     join "files" using ("fileId")
     join "users" using ("userId")
-    join "tag_arrays" using ("postId")
+    left join "tag_arrays" using ("postId")
     order by "p"."createdAt" desc;
   `;
   db.query(sql).then(reSQL => {
@@ -174,7 +175,7 @@ app.get('/api/posts/view/:id', (req, res, next) => {
     from "posts" as "p"
     join "files" using ("fileId")
     join "users" using ("userId")
-    join "tag_arrays" using ("postId")
+    left join "tag_arrays" using ("postId")
     where "postId" = $1;
   `;
   db.query(sql, [id])
@@ -352,19 +353,21 @@ app.post(
     };
 
     const {
-      title,
+      title: rawTitle,
+      description: rawDescription,
       tags: rawTags,
       filePropsSound,
       filePropsLayerCount,
       filePropsName
     } = req.body;
 
-    let { description } = req.body;
-    if (!req.body.description) {
-      description = '';
-    }
+    const splitTags = rawTags.split(' ');
 
-    const tags = rawTags.split(',').map(e => e.trim());
+    const { title, description, tags } = postSchema.cast({
+      title: rawTitle,
+      description: rawDescription,
+      tags: splitTags
+    });
 
     const sql = `/* SQL */
       with "new_file" as (
@@ -425,7 +428,8 @@ app.post(
     db.query(sql, params)
       .then(reSQL => {
         res.json(reSQL);
-      });
+      })
+      .catch(err => next(err));
   }
 );
 
