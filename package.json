@@ -11,6 +11,7 @@
     "db:import": "sh database/import.sh",
     "db:save": "sh database/save.sh",
     "db:load": "sh database/load.sh",
+    "db": ". ./.env; psql $DATABASE_URL",
     "prepare": "husky install"
   },
   "dependencies": {
