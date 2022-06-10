@@ -25,7 +25,7 @@ export default function SymbolArtCard(props) {
     return;
   }
 
-  const {
+  let {
     postId,
     title,
     description,
@@ -37,13 +37,17 @@ export default function SymbolArtCard(props) {
     filePropsName
   } = props.symbolArt;
 
+  if (!tags) {
+    tags = [];
+  }
+
   const downloadLink = apiDownloadPostFromId(postId);
   const postLink = pathPostFromId(postId);
   const userLink = pathUserFromUserId(userId);
 
   return (
-    <div className="grid-item rounded-box flex h-fit flex-col gap-4 bg-base-100 p-4">
-      <div className="flex flex-col gap-4">
+    <div className="rounded-box h-fit bg-base-100 p-4">
+      <div className="flex flex-col gap-4 pb-4">
         <Link to={postLink} className="transition-all hover:translate-y-0.5">
           <LazyLoadImage
             className="rounded-box aspect-[2/1] w-full select-none shadow-sm"
@@ -73,24 +77,23 @@ export default function SymbolArtCard(props) {
           }{' '}
         </div>
       </div>
-      <div className="y-2 flex flex-col ">
-        <div className="w-fit">
-          <Link to={postLink}>
-            <h3 className="link-hover m-0 break-words break-all text-lg font-bold">
-              {title}
-            </h3>
-          </Link>
-        </div>
-        <Link to={userLink}>
-          <h4 className="link-hover text-sm font-semibold">@{username}</h4>
+      <div className="w-fit">
+        <Link to={postLink}>
+          <h3 className="link-hover m-0 break-words break-all text-lg font-bold">
+            {title}
+          </h3>
         </Link>
-        <p className="text-sm">{description}</p>
       </div>
-      <ul className="flex flex-wrap gap-2">
-        {tags.map((tag, id) => {
-          if (tag === '') return '';
-          return <Tag key={id} tag={tag} />;
-        })}
+      <Link to={userLink}>
+        <h4 className="link-hover text-sm font-semibold">@{username}</h4>
+      </Link>
+      {description && <p className="py-2 text-sm">{description}</p>}
+      <ul className="flex flex-wrap gap-2 pt-2 pb-4">
+        {tags &&
+          tags.map((tag, id) => {
+            if (tag === '') return '';
+            return <Tag key={id} tag={tag} />;
+          })}
       </ul>
       <div>
         <a

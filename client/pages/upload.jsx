@@ -71,7 +71,6 @@ export default class UploadPage extends React.Component {
     window.removeEventListener('dragover', this.cancelDefaults);
   }
 
-  // prettier-ignore
   handleSubmit(event) {
     event.preventDefault();
     const imageSrc = this.imageRef.current.state.imageSrc;
@@ -94,7 +93,9 @@ export default class UploadPage extends React.Component {
           method: 'POST',
           body: formData,
           headers: {
-            'X-Access-Token': this.context.userToken ? this.context.userToken : ''
+            'X-Access-Token': this.context.userToken
+              ? this.context.userToken
+              : ''
           }
         });
       })

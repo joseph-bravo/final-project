@@ -28,7 +28,7 @@ export default function SinglePostSymbolArt(props) {
     );
   }
 
-  const {
+  let {
     postId,
     title,
     description,
@@ -40,6 +40,10 @@ export default function SinglePostSymbolArt(props) {
     filePropsName,
     filePropsLayerCount
   } = props.symbolArt;
+
+  if (!tags) {
+    tags = [];
+  }
 
   const downloadLink = apiDownloadPostFromId(postId);
   const userLink = pathUserFromUserId(userId);
