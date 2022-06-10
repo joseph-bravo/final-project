@@ -430,6 +430,75 @@ app.post(
 );
 
 /**
+ * ? Handle post (id) edits with JSON passed as new text to change.
+ * @JSONBody - title: string, description: string, array: string[]
+ */
+app.put('/api/posts/edit/:id', (req, res, next) => {
+  // if (req.user === null) {
+  //   throw new ClientError(401, 'authorization required');
+  // }
+
+  // title: string, description: string, tags: string[]
+  const { title, tags: rawTags } = req.body;
+
+  let { description } = req.body;
+  if (!req.body.description) {
+    description = '';
+  }
+
+  const tags = rawTags.map(e => e.trim());
+
+  const sql = `/* SQL */
+    with "update_post" as (
+      update "posts"
+      set
+        "title" = $1,
+        "description" = $2
+      where "postId" = $3
+      returning *
+    ), "delete_taggings" as (
+      delete from "taggings"
+      where
+      "postId" = $3
+      returning *
+    ), "upsert_tags" as (
+      insert into "tags" ("tagName")
+      select
+        unnest($4::text[]) as "tagName"
+      on conflict ("tagName")
+        do nothing
+    ) , "add_taggings" as (
+      insert into "taggings" ("postId", "tagName")
+      select
+        $3,
+        unnest($4::text[]) as "tagName"
+      returning *
+    ), "tag_arrays" as (
+      select
+        $3 as "postId",
+        array_agg("tagName") as "tags"
+      from "add_taggings"
+    )
+
+    select
+      "title", "description", "username",
+      "fileObjectKey", "previewImagePath",
+      "filePropsName", "filePropsSound", "filePropsLayerCount",
+      "postId", "userId", "p"."createdAt", "tags"
+    from "posts" as "p"
+    join "files" using ("fileId")
+    join "users" using ("userId")
+    join "tag_arrays" using ("postId")
+    where "postId" = $3;
+  `;
+
+  const params = [title, description, req.params.id, tags];
+  db.query(sql, params).then(reSQL => {
+    res.json(reSQL);
+  });
+});
+
+/**
  * ? Handle auth signup
  * @JSONBody - username: string. password: string
  */
