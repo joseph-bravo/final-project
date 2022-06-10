@@ -17,4 +17,3 @@ const postSchema = object({
 });
 
 module.exports = postSchema;
-export default postSchema;

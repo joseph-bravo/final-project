@@ -3,9 +3,10 @@ import Navigate from '../components/utils/navigate';
 import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
 import AppContext from '../lib/app-context';
+import postSchema from '../../shared/post-schema';
 
-const descriptionCharLimit = 90;
 const titleCharLimit = 25;
+const descriptionCharLimit = 75;
 const tagCharLimit = 10;
 const tagCountLimit = 5;
 
@@ -23,6 +24,7 @@ export default class UploadPage extends React.Component {
     };
 
     this.imageRef = React.createRef();
+    this.formRef = React.createRef();
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
@@ -129,32 +131,21 @@ export default class UploadPage extends React.Component {
   }
 
   handleChange(event) {
-    if (event.target.name === 'description') {
-      if (event.target.value.length > descriptionCharLimit) {
+    try {
+      let { value } = event.target;
+      value = value.trimStart();
+      if (event.target.name === 'tags') {
+        value = value.split(' ');
+      }
+      postSchema.validateSyncAt(event.target.name, {
+        [event.target.name]: value
+      });
+    } catch (err) {
+      if (err.type !== 'required') {
         return;
       }
     }
-    if (event.target.name === 'title') {
-      if (event.target.value.length > titleCharLimit) {
-        return;
-      }
-    }
-    if (event.target.name === 'tags') {
-      const { value } = event.target;
-      let tags = value.split(',');
-      tags = tags.map(e => e.trim());
-      if (tags.length > 5) {
-        return;
-      }
-      for (let i = 0; i < tags.length; i++) {
-        const tag = tags[i];
-        if (tag.length > 10) {
-          return;
-        }
-      }
-      event.target.value = event.target.value.toLowerCase();
-    }
-    this.setState({ [event.target.name]: event.target.value });
+    this.setState({ [event.target.name]: event.target.value.trimStart() });
   }
 
   closeAlert() {
@@ -169,8 +160,8 @@ export default class UploadPage extends React.Component {
 
   render() {
     const descriptionRemainingChars =
-      descriptionCharLimit - this.state.description.length;
-    const titleRemainingChars = titleCharLimit - this.state.title.length;
+      descriptionCharLimit - this.state.description.trim().length;
+    const titleRemainingChars = titleCharLimit - this.state.title.trim().length;
 
     if (this.state.goingBack) {
       return <Navigate to="/" />;
@@ -178,6 +169,7 @@ export default class UploadPage extends React.Component {
 
     return (
       <form
+        ref={this.formRef}
         onSubmit={this.handleSubmit}
         className="mx-auto flex max-w-3xl flex-col gap-4 ">
         <div className="rounded-box flex justify-center bg-base-100 p-2">
