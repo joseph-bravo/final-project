@@ -405,20 +405,37 @@ app.post(
  * ? Handle post (id) edits with JSON passed as new text to change.
  * @JSONBody - title: string, description: string, array: string[]
  */
-app.put('/api/posts/edit/:id', (req, res, next) => {
-  // if (req.user === null) {
-  //   throw new ClientError(401, 'authorization required');
-  // }
+app.put('/api/posts/edit/:id', authMiddleware, (req, res, next) => {
+  if (req.userId === null) {
+    throw new ClientError(401, 'authorization required');
+  }
+  const { id } = req.params;
+  if (Number.isNaN(Number(id))) {
+    throw new ClientError(400, 'please provide a valid post ID (number)');
+  }
+  if (!(id >= 1) || !(id <= 2147483647)) {
+    throw new ClientError(400, 'integer out of bounds');
+  }
+  const {
+    title: rawTitle,
+    description: rawDescription,
+    tags: rawTags
+  } = req.body;
 
-  // title: string, description: string, tags: string[]
-  const { title, tags: rawTags } = req.body;
-
-  let { description } = req.body;
-  if (!req.body.description) {
-    description = '';
+  if (!rawTitle || !rawDescription || !rawTags) {
+    throw new ClientError(
+      400,
+      'title, description, and tags are required fields'
+    );
   }
 
-  const tags = rawTags.map(e => e.trim());
+  const splitTags = rawTags.split(' ');
+
+  const { title, description, tags } = postSchema.cast({
+    title: rawTitle,
+    description: rawDescription,
+    tags: splitTags
+  });
 
   const sql = `/* SQL */
     with "update_post" as (
@@ -426,24 +443,27 @@ app.put('/api/posts/edit/:id', (req, res, next) => {
       set
         "title" = $1,
         "description" = $2
-      where "postId" = $3
-      returning *
-    ), "delete_taggings" as (
-      delete from "taggings"
       where
-      "postId" = $3
-      returning *
+        "postId" = $3 and
+        "userId" = $5
+      returning "postId", "title", "description", $4 as "new_tags"
+    ), "delete_taggings" as (
+      delete from "taggings" as "t"
+      using "update_post" as "u"
+      where "u"."postId" = "t"."postId"
     ), "upsert_tags" as (
       insert into "tags" ("tagName")
       select
-        unnest($4::text[]) as "tagName"
+        unnest("new_tags"::text[]) as "tagName"
+          from "update_post"
       on conflict ("tagName")
         do nothing
     ) , "add_taggings" as (
       insert into "taggings" ("postId", "tagName")
       select
         $3,
-        unnest($4::text[]) as "tagName"
+        unnest("new_tags"::text[]) as "tagName"
+          from "update_post"
       returning *
     ), "tag_arrays" as (
       select
@@ -453,21 +473,38 @@ app.put('/api/posts/edit/:id', (req, res, next) => {
     )
 
     select
-      "title", "description", "username",
-      "fileObjectKey", "previewImagePath",
-      "filePropsName", "filePropsSound", "filePropsLayerCount",
-      "postId", "userId", "p"."createdAt", "tags"
-    from "posts" as "p"
-    join "files" using ("fileId")
+      "u"."title", "u"."description", "u"."postId",
+      "files"."fileObjectKey", "files"."previewImagePath",
+      "files"."filePropsName", "files"."filePropsSound", "files"."filePropsLayerCount",
+      "username", "posts"."userId", "posts"."postId", "posts"."createdAt", "tags"
+    from "update_post" as "u"
+    join "posts" using ("postId")
     join "users" using ("userId")
+    join "files" using ("fileId")
     join "tag_arrays" using ("postId")
-    where "postId" = $3;
+
+    -- select
+    --   "u"."title", "u"."description", "username",
+    --   "fileObjectKey", "previewImagePath",
+    --   "filePropsName", "filePropsSound", "filePropsLayerCount",
+    --   "postId", "userId", "p"."createdAt", "tags"
+    -- from "posts" as "p"
+    -- join "update_post" using ("postId") as "u"
+    -- join "files" using ("fileId")
+    -- join "users" using ("userId")
+    -- join "tag_arrays" using ("postId")
+    -- where "postId" = $3;
   `;
 
-  const params = [title, description, req.params.id, tags];
-  db.query(sql, params).then(reSQL => {
-    res.json(reSQL);
-  });
+  const params = [title, description, id, tags, req.userId];
+  db.query(sql, params)
+    .then(({ rows: [entry] }) => {
+      if (!entry) {
+        throw new ClientError(404, `unable to find entry with id: ${id}`);
+      }
+      res.json(entry);
+    })
+    .catch(err => next(err));
 });
 
 /**

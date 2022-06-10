@@ -210,6 +210,7 @@ COPY public.files ("fileId", "fileObjectKey", "previewImagePath", "filePropsName
 13	34fd821a-2009-4964-b9b8-b67b5647b043.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/34fd821a-2009-4964-b9b8-b67b5647b043.png	Paimon Munch	8	81
 14	3850fceb-5af4-4d5d-98fb-3f5c4085dd15.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/3850fceb-5af4-4d5d-98fb-3f5c4085dd15.png	Symbol Art	5	34
 15	45ac380b-cbdf-4dc0-8852-bbb6c8ca8fea.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/45ac380b-cbdf-4dc0-8852-bbb6c8ca8fea.png	Afin, mate!	3	208
+16	fd3c85cf-09ab-4770-b1c8-912364f24dfc.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/fd3c85cf-09ab-4770-b1c8-912364f24dfc.png	Untitled	8	26
 \.
 
 
@@ -233,6 +234,7 @@ COPY public.posts ("postId", "fileId", "userId", "createdAt", title, description
 13	13	1	2022-06-07 19:52:38.244189+00	Paimon Cookie	munch munch munch...
 14	14	1	2022-06-07 19:55:46.165852+00	man...	
 15	15	1	2022-06-07 19:55:59.209451+00	afin meme	
+16	16	97	2022-06-10 22:17:52.099733+00	asdf	asdf
 \.
 
 
@@ -278,6 +280,9 @@ affix	12
 genshin	13
 	14
 	15
+asdf	16
+lkjf	16
+nbnbnbnbnb	16
 \.
 
 
@@ -311,6 +316,9 @@ sonic
 monica
 genshin
 
+asdf
+lkjf
+nbnbnbnbnb
 \.
 
 
@@ -320,6 +328,7 @@ genshin
 
 COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin;
 1	anonymous	$argon2i$v=19$m=4096,t=3,p=1$PvR3TSLtjv1M7d8hYlsnTw$06InRxBtrH639O80gXeErhliAKcpSAJ+I4fg4TZ/fRk	2022-06-02 23:40:22.180351+00
+97	baba	$argon2i$v=19$m=4096,t=3,p=1$NS7pjNq+V4suJ2xwktzVvA$Us/QVqRdlQdefj1haDpM2MKog8g58+jI9FMh5jYf4K4	2022-06-10 22:17:39.969103+00
 \.
 
 
@@ -327,21 +336,21 @@ COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin
 -- Name: files_fileId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."files_fileId_seq"', 15, true);
+SELECT pg_catalog.setval('public."files_fileId_seq"', 16, true);
 
 
 --
 -- Name: posts_postId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."posts_postId_seq"', 15, true);
+SELECT pg_catalog.setval('public."posts_postId_seq"', 16, true);
 
 
 --
 -- Name: users_userId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."users_userId_seq"', 96, true);
+SELECT pg_catalog.setval('public."users_userId_seq"', 97, true);
 
 
 --
@@ -427,3 +436,4 @@ ALTER TABLE ONLY public.taggings
 --
 -- PostgreSQL database dump complete
 --
+
