@@ -62,38 +62,6 @@ app.get('/api/catalog', (req, res, next) => {
 });
 
 /**
- * ? Get post data limited with a limit to 20, provided the offset
- */
-app.get('/api/catalog/:offset', (req, res, next) => {
-  const { offset } = req.params;
-  const sql = `/* SQL */
-    with "tag_arrays" as (
-      select
-        "postId",
-        array_agg("tagName") as "tags"
-      from "taggings"
-      group by "postId"
-    )
-
-    select
-      "title", "description", "username",
-      "fileObjectKey", "previewImagePath",
-      "filePropsName", "filePropsSound", "filePropsLayerCount",
-      "postId", "userId", "p"."createdAt", "tags"
-    from "posts" as "p"
-    join "files" using ("fileId")
-    join "users" using ("userId")
-    join "tag_arrays" using ("postId")
-    order by "p"."createdAt"
-    limit 20
-    offset $1;
-  `;
-  db.query(sql, [offset]).then(reSQL => {
-    res.json(reSQL.rows);
-  });
-});
-
-/**
  * ? Queries DB for catalog but limits to userId param
  */
 app.get('/api/catalog/user/:userId', (req, res, next) => {
