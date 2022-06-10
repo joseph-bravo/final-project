@@ -369,10 +369,6 @@ app.post(
       tags: splitTags
     });
 
-    console.log(title);
-    console.log(description);
-    console.log(Array.isArray(tags));
-
     const sql = `/* SQL */
       with "new_file" as (
       insert into "files" ("fileObjectKey", "previewImagePath", "filePropsSound", "filePropsName", "filePropsLayerCount")
