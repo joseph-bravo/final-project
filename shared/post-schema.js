@@ -12,6 +12,15 @@ const postSchema = object({
   description: string().trim().max(r.descriptionMaxChars),
   tags: array()
     .of(string().trim().max(r.tagsMaxChars).lowercase())
+    .transform(tags => {
+      const out = [];
+      for (let i = 0; i < tags.length; i++) {
+        if (!out.includes(tags[i])) {
+          out.push(tags[i]);
+        }
+      }
+      return out;
+    })
     .compact()
     .max(r.tagsMaxCount)
 });
