@@ -24,7 +24,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
@@ -223,16 +223,16 @@ COPY public.posts ("postId", "fileId", "userId", "createdAt", title, description
 3	3	1	2022-06-02 23:47:26.510597+00	Hot Sexy Casts	Why yes, I do play CAST
 4	4	1	2022-06-02 23:47:50.45816+00	Lobby Grinding >>>>	Drake Meme but epic
 5	5	1	2022-06-02 23:48:10.656897+00	WAN MOAR!!!	PSE Burst One More!!!
-6	6	1	2022-06-02 23:48:24.358375+00	rappy my beloved
+6	6	1	2022-06-02 23:48:24.358375+00	rappy my beloved	
 7	7	1	2022-06-02 23:48:51.605105+00	Rappy Punch Nyau	kill.... kill!!!
 8	8	1	2022-06-02 23:49:43.249282+00	Dudu Death	Pop Team Epic... kill dudu... rip guardian soul
 9	9	1	2022-06-03 17:44:41.523469+00	Io Cutie	what a cute gal...
 10	10	1	2022-06-03 23:22:42.028371+00	Eggman Announcement	I've come to make an announcement...
-11	11	1	2022-06-07 00:08:05.357028+00	HYPE HYPE HYPE
+11	11	1	2022-06-07 00:08:05.357028+00	HYPE HYPE HYPE	
 12	12	1	2022-06-07 00:08:42.39005+00	monica laugh	failed at 90%???
 13	13	1	2022-06-07 19:52:38.244189+00	Paimon Cookie	munch munch munch...
-14	14	1	2022-06-07 19:55:46.165852+00	man...
-15	15	1	2022-06-07 19:55:59.209451+00	afin meme
+14	14	1	2022-06-07 19:55:46.165852+00	man...	
+15	15	1	2022-06-07 19:55:59.209451+00	afin meme	
 \.
 
 
