@@ -1,2 +1,2 @@
 insert into "users" ("hashedPassword", "username")
-  values ('fakepassword', 'admin')
+  values ('fakepassword', 'anonymous')

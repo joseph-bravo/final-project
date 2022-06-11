@@ -51,7 +51,7 @@ app.get('/api/catalog', (req, res, next) => {
       "filePropsName", "filePropsSound", "filePropsLayerCount",
       "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
     left join "tag_arrays" using ("postId")
     order by "p"."createdAt" desc;
@@ -86,7 +86,7 @@ app.get('/api/catalog/user/:userId', (req, res, next) => {
         "filePropsName", "filePropsSound", "filePropsLayerCount",
         "postId", "userId", "p"."createdAt", "tags"
       from "posts" as "p"
-      join "files" using ("fileId")
+      join "files" using ("postId")
       join "users" using ("userId")
       join "tag_arrays" using ("postId")
       order by "p"."createdAt" desc
@@ -141,7 +141,7 @@ app.get('/api/posts/view/:id', (req, res, next) => {
       "filePropsName", "filePropsSound", "filePropsLayerCount",
       "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
     left join "tag_arrays" using ("postId")
     where "postId" = $1;
@@ -250,7 +250,7 @@ app.get('/api/posts/search', (req, res, next) => {
       "postId", "userId", "posts"."createdAt", "tag_arrays"."tags", "ranks"
     from "search_ranking"
     join "posts" using ("postId")
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
     join "tag_arrays" using ("postId")
     where "ranks" > 0.01
@@ -279,7 +279,7 @@ app.get('/api/posts/download/:id', (req, res, next) => {
       "fileObjectKey", "title"
     from
       "posts"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     where
       "postId" = $1;
   `;
@@ -338,20 +338,18 @@ app.post(
     });
 
     const sql = `/* SQL */
-      with "new_file" as (
-      insert into "files" ("fileObjectKey", "previewImagePath", "filePropsSound", "filePropsName", "filePropsLayerCount")
-          values ($1, $2, $3, $4, $5)
-        returning
-          *
-      ), "new_post" as (
-      insert into "posts" ("fileId", "userId", "title", "description")
-        select
-          "fileId",
-          $6,
-          $7,
-          $8
-        from
-          "new_file"
+      with "new_post" as (
+        insert into "posts" ("userId", "title", "description")
+          select
+            $6,
+            $7,
+            $8
+          returning
+            *
+      ), "new_file" as (
+        insert into "files" ("postId", "fileObjectKey", "previewImagePath", "filePropsSound", "filePropsName", "filePropsLayerCount")
+          select "postId", $1, $2, $3, $4, $5
+          from "new_post"
         returning
           *
       ),
@@ -378,7 +376,7 @@ app.post(
         *
       from
         "new_post"
-        join "new_file" using ("fileId")
+        join "new_file" using ("postId")
     `;
 
     const params = [
@@ -480,20 +478,8 @@ app.put('/api/posts/edit/:id', authMiddleware, (req, res, next) => {
     from "update_post" as "u"
     join "posts" using ("postId")
     join "users" using ("userId")
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "tag_arrays" using ("postId")
-
-    -- select
-    --   "u"."title", "u"."description", "username",
-    --   "fileObjectKey", "previewImagePath",
-    --   "filePropsName", "filePropsSound", "filePropsLayerCount",
-    --   "postId", "userId", "p"."createdAt", "tags"
-    -- from "posts" as "p"
-    -- join "update_post" using ("postId") as "u"
-    -- join "files" using ("fileId")
-    -- join "users" using ("userId")
-    -- join "tag_arrays" using ("postId")
-    -- where "postId" = $3;
   `;
 
   const params = [title, description, id, tags, req.userId];
@@ -603,7 +589,7 @@ app.get('/posts/:id', (req, res, next) => {
       "filePropsName", "filePropsSound", "filePropsLayerCount",
       "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
     join "tag_arrays" using ("postId")
     where "postId" = $1;

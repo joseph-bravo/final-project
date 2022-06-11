@@ -8,7 +8,6 @@ create schema "public";
 
 create table "posts" (
   "postId" serial primary key not null,
-  "fileId" integer not null,
   "userId" integer not null,
   "createdAt" timestamptz not null default now(),
   "title" text not null,
@@ -17,6 +16,7 @@ create table "posts" (
 
 create table "files" (
   "fileId" serial primary key not null,
+  "postId" integer not null,
   "fileObjectKey" text not null,
   "previewImagePath" text not null,
   "filePropsName" text,
@@ -41,10 +41,10 @@ create table "taggings" (
 );
 
 alter table "posts"
-  add foreign key ("fileId") references "files" ("fileId") on delete cascade;
-
-alter table "posts"
   add foreign key ("userId") references "users" ("userId");
+
+alter table "files"
+  add foreign key ("postId") references "posts" ("postId") on delete cascade;
 
 alter table "taggings"
   add foreign key ("tagName") references "tags" ("tagName") on delete cascade;
