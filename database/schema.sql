@@ -41,13 +41,13 @@ create table "taggings" (
 );
 
 alter table "posts"
-  add foreign key ("fileId") references "files" ("fileId");
+  add foreign key ("fileId") references "files" ("fileId") on delete cascade;
 
 alter table "posts"
   add foreign key ("userId") references "users" ("userId");
 
 alter table "taggings"
-  add foreign key ("tagName") references "tags" ("tagName");
+  add foreign key ("tagName") references "tags" ("tagName") on delete cascade;
 
 alter table "taggings"
-  add foreign key ("postId") references "posts" ("postId");
+  add foreign key ("postId") references "posts" ("postId") on delete cascade;
