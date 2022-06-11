@@ -32,7 +32,6 @@ export default class UploadPage extends React.Component {
     this.closeAlert = this.closeAlert.bind(this);
     this.fileLoad = this.fileLoad.bind(this);
     this.handleDrop = this.handleDrop.bind(this);
-    this.checkFormValues = this.checkFormValues.bind(this);
     this.resetForm = this.resetForm.bind(this);
   }
 
@@ -153,12 +152,6 @@ export default class UploadPage extends React.Component {
     this.setState({ isErrorAlertOpen: false });
   }
 
-  checkFormValues() {
-    const { file, title, description } = this.state;
-    if (!file || !title || !description) return false;
-    return true;
-  }
-
   render() {
     const descriptionRemainingChars =
       descriptionCharLimit - this.state.description.trim().length;
@@ -234,7 +227,7 @@ export default class UploadPage extends React.Component {
                     value={this.state.tags}
                     handleChange={this.handleChange}
                     placeholder="enter tags"
-                    rules={`lowercase, split by commas, max ${tagCountLimit} tags, ${tagCharLimit} chars each`}
+                    rules={`lowercase, split by spaces, max ${tagCountLimit} tags, ${tagCharLimit} chars each`}
                   />
 
                 </div>
