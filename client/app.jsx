@@ -16,7 +16,8 @@ export default class App extends React.Component {
     this.state = {
       userToken: null,
       username: null,
-      userId: null
+      userId: null,
+      editing: null
     };
     this.playSound = this.playSound.bind(this);
     this.sounds = sounds.map(sound => {
@@ -25,6 +26,7 @@ export default class App extends React.Component {
     });
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
+    this.setEditing = this.setEditing.bind(this);
   }
 
   componentDidMount() {
@@ -73,12 +75,18 @@ export default class App extends React.Component {
     }
   }
 
+  setEditing(id) {
+    this.setState({ editing: id });
+  }
+
   render() {
     const context = {
       ...this.state,
+      setState: this.setState,
       playSound: this.playSound,
       login: this.login,
-      logout: this.logout
+      logout: this.logout,
+      setEditing: this.setEditing
     };
     return (
       <AppContext.Provider value={context}>

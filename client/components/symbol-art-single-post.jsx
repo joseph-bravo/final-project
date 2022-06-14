@@ -33,7 +33,7 @@ export default function SinglePostSymbolArt(props) {
     title,
     description,
     previewImagePath,
-    tags,
+    tags = [],
     username,
     userId,
     filePropsSound,

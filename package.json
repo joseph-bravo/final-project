@@ -11,6 +11,7 @@
     "db:import": "sh database/import.sh",
     "db:save": "sh database/save.sh",
     "db:load": "sh database/load.sh",
+    "db": ". ./.env; psql $DATABASE_URL",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
     "multer": "^1.4.5-lts.1",
     "multer-s3": "^3.0.1",
     "pg": "^8.7.3",
@@ -32,7 +34,8 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-lazy-load-image-component": "^1.5.4",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7.18.0",

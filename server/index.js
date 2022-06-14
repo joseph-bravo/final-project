@@ -4,11 +4,12 @@ const express = require('express');
 const pg = require('pg');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const kebabCase = require('lodash/kebabCase');
 const errorMiddleware = require('./error-middleware');
 const { upload, download } = require('./s3-middleware');
 const ClientError = require('./client-error');
-const middlewareGenUUID = require('./uuid-to-req-middleware');
 const authMiddleware = require('./auth-middleware');
+const postSchema = require('../shared/post-schema');
 
 const app = express();
 const publicPath = path.join(__dirname, 'public');
@@ -50,44 +51,12 @@ app.get('/api/catalog', (req, res, next) => {
       "filePropsName", "filePropsSound", "filePropsLayerCount",
       "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
-    join "tag_arrays" using ("postId")
+    left join "tag_arrays" using ("postId")
     order by "p"."createdAt" desc;
   `;
   db.query(sql).then(reSQL => {
-    res.json(reSQL.rows);
-  });
-});
-
-/**
- * ? Get post data limited with a limit to 20, provided the offset
- */
-app.get('/api/catalog/:offset', (req, res, next) => {
-  const { offset } = req.params;
-  const sql = `/* SQL */
-    with "tag_arrays" as (
-      select
-        "postId",
-        array_agg("tagName") as "tags"
-      from "taggings"
-      group by "postId"
-    )
-
-    select
-      "title", "description", "username",
-      "fileObjectKey", "previewImagePath",
-      "filePropsName", "filePropsSound", "filePropsLayerCount",
-      "postId", "userId", "p"."createdAt", "tags"
-    from "posts" as "p"
-    join "files" using ("fileId")
-    join "users" using ("userId")
-    join "tag_arrays" using ("postId")
-    order by "p"."createdAt"
-    limit 20
-    offset $1;
-  `;
-  db.query(sql, [offset]).then(reSQL => {
     res.json(reSQL.rows);
   });
 });
@@ -117,7 +86,7 @@ app.get('/api/catalog/user/:userId', (req, res, next) => {
         "filePropsName", "filePropsSound", "filePropsLayerCount",
         "postId", "userId", "p"."createdAt", "tags"
       from "posts" as "p"
-      join "files" using ("fileId")
+      join "files" using ("postId")
       join "users" using ("userId")
       join "tag_arrays" using ("postId")
       order by "p"."createdAt" desc
@@ -172,9 +141,9 @@ app.get('/api/posts/view/:id', (req, res, next) => {
       "filePropsName", "filePropsSound", "filePropsLayerCount",
       "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
-    join "tag_arrays" using ("postId")
+    left join "tag_arrays" using ("postId")
     where "postId" = $1;
   `;
   db.query(sql, [id])
@@ -281,7 +250,7 @@ app.get('/api/posts/search', (req, res, next) => {
       "postId", "userId", "posts"."createdAt", "tag_arrays"."tags", "ranks"
     from "search_ranking"
     join "posts" using ("postId")
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
     join "tag_arrays" using ("postId")
     where "ranks" > 0.01
@@ -310,7 +279,7 @@ app.get('/api/posts/download/:id', (req, res, next) => {
       "fileObjectKey", "title"
     from
       "posts"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     where
       "postId" = $1;
   `;
@@ -321,7 +290,7 @@ app.get('/api/posts/download/:id', (req, res, next) => {
         res.status(404).json({ error: `unable to find entry with id: ${id}` });
       }
       const [{ fileObjectKey, title }] = reSQL.rows;
-      download(fileObjectKey, `${title}.sar`).then(downloadURL => {
+      download(fileObjectKey, `${kebabCase(title)}.sar`).then(downloadURL => {
         res.redirect(downloadURL);
       });
     });
@@ -333,7 +302,6 @@ app.get('/api/posts/download/:id', (req, res, next) => {
 app.post(
   '/api/upload',
   authMiddleware,
-  middlewareGenUUID,
   upload.fields([
     { name: 'sar', maxCount: 1 },
     { name: 'thumbnail', maxCount: 1 }
@@ -352,35 +320,35 @@ app.post(
     };
 
     const {
-      title,
+      title: rawTitle,
+      description: rawDescription,
       tags: rawTags,
       filePropsSound,
       filePropsLayerCount,
       filePropsName
     } = req.body;
 
-    let { description } = req.body;
-    if (!req.body.description) {
-      description = '';
-    }
+    const splitTags = rawTags.split(' ');
 
-    const tags = rawTags.split(',').map(e => e.trim());
+    const { title, description, tags } = postSchema.cast({
+      title: rawTitle,
+      description: rawDescription,
+      tags: splitTags
+    });
 
     const sql = `/* SQL */
-      with "new_file" as (
-      insert into "files" ("fileObjectKey", "previewImagePath", "filePropsSound", "filePropsName", "filePropsLayerCount")
-          values ($1, $2, $3, $4, $5)
-        returning
-          *
-      ), "new_post" as (
-      insert into "posts" ("fileId", "userId", "title", "description")
-        select
-          "fileId",
-          $6,
-          $7,
-          $8
-        from
-          "new_file"
+      with "new_post" as (
+        insert into "posts" ("userId", "title", "description")
+          select
+            $6,
+            $7,
+            $8
+          returning
+            *
+      ), "new_file" as (
+        insert into "files" ("postId", "fileObjectKey", "previewImagePath", "filePropsSound", "filePropsName", "filePropsLayerCount")
+          select "postId", $1, $2, $3, $4, $5
+          from "new_post"
         returning
           *
       ),
@@ -407,7 +375,7 @@ app.post(
         *
       from
         "new_post"
-        join "new_file" using ("fileId")
+        join "new_file" using ("postId")
     `;
 
     const params = [
@@ -425,9 +393,104 @@ app.post(
     db.query(sql, params)
       .then(reSQL => {
         res.json(reSQL);
-      });
+      })
+      .catch(err => next(err));
   }
 );
+
+/**
+ * ? Handle post (id) edits with JSON passed as new text to change.
+ * @JSONBody - title: string, description: string, array: string[]
+ */
+app.put('/api/posts/edit/:id', authMiddleware, (req, res, next) => {
+  if (req.userId === null) {
+    throw new ClientError(401, 'authorization required');
+  }
+  const { id } = req.params;
+  if (Number.isNaN(Number(id))) {
+    throw new ClientError(400, 'please provide a valid post ID (number)');
+  }
+  if (!(id >= 1) || !(id <= 2147483647)) {
+    throw new ClientError(400, 'integer out of bounds');
+  }
+  const {
+    title: rawTitle,
+    description: rawDescription,
+    tags: rawTags
+  } = req.body;
+
+  if (!rawTitle || !rawDescription || !rawTags) {
+    throw new ClientError(
+      400,
+      'title, description, and tags are required fields'
+    );
+  }
+
+  const splitTags = rawTags.split(' ');
+
+  const { title, description, tags } = postSchema.cast({
+    title: rawTitle,
+    description: rawDescription,
+    tags: splitTags
+  });
+
+  const sql = `/* SQL */
+    with "update_post" as (
+      update "posts"
+      set
+        "title" = $1,
+        "description" = $2
+      where
+        "postId" = $3 and
+        "userId" = $5
+      returning "postId", "title", "description", $4 as "new_tags"
+    ), "delete_taggings" as (
+      delete from "taggings" as "t"
+      using "update_post" as "u"
+      where "u"."postId" = "t"."postId"
+    ), "upsert_tags" as (
+      insert into "tags" ("tagName")
+      select
+        unnest("new_tags"::text[]) as "tagName"
+          from "update_post"
+      on conflict ("tagName")
+        do nothing
+    ) , "add_taggings" as (
+      insert into "taggings" ("postId", "tagName")
+      select
+        $3,
+        unnest("new_tags"::text[]) as "tagName"
+          from "update_post"
+      returning *
+    ), "tag_arrays" as (
+      select
+        $3 as "postId",
+        array_agg("tagName") as "tags"
+      from "add_taggings"
+    )
+
+    select
+      "u"."title", "u"."description", "u"."postId",
+      "files"."fileObjectKey", "files"."previewImagePath",
+      "files"."filePropsName", "files"."filePropsSound", "files"."filePropsLayerCount",
+      "username", "posts"."userId", "posts"."postId", "posts"."createdAt", "tags"
+    from "update_post" as "u"
+    join "posts" using ("postId")
+    join "users" using ("userId")
+    join "files" using ("postId")
+    join "tag_arrays" using ("postId")
+  `;
+
+  const params = [title, description, id, tags, req.userId];
+  db.query(sql, params)
+    .then(({ rows: [entry] }) => {
+      if (!entry) {
+        throw new ClientError(404, `unable to find entry with id: ${id}`);
+      }
+      res.json(entry);
+    })
+    .catch(err => next(err));
+});
 
 /**
  * ? Handle auth signup
@@ -525,7 +588,7 @@ app.get('/posts/:id', (req, res, next) => {
       "filePropsName", "filePropsSound", "filePropsLayerCount",
       "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
-    join "files" using ("fileId")
+    join "files" using ("postId")
     join "users" using ("userId")
     join "tag_arrays" using ("postId")
     where "postId" = $1;
