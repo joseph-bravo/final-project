@@ -8,12 +8,16 @@ html(lang="en", data-theme="light")
     meta(property="twitter:card" content="summary_large_image")
 
 
-    if title && description && image
+    if title
       meta(property="og:title" content=title)
+
+    if description
       meta(property="og:description" content=description)
+
+    if image
       meta(property="og:image" content=image)
 
-    title Final Project
+    title Symbol Art Vault
 
 
     link(rel="icon", href="/favicon.ico")
