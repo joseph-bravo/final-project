@@ -13,13 +13,7 @@ const postSchema = object({
   tags: array()
     .of(string().trim().max(r.tagsMaxChars).lowercase())
     .transform(tags => {
-      const out = [];
-      for (let i = 0; i < tags.length; i++) {
-        if (!out.includes(tags[i])) {
-          out.push(tags[i]);
-        }
-      }
-      return out;
+      return [...new Set(tags)];
     })
     .compact()
     .max(r.tagsMaxCount)
