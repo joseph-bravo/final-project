@@ -3,6 +3,7 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3/');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+const { randomUUID } = require('crypto');
 
 const s3 = new S3Client({
   credentials: {
@@ -19,7 +20,7 @@ const storage = multerS3({
   contentType: multerS3.AUTO_CONTENT_TYPE,
   key: (req, file, done) => {
     const fileExtension = path.extname(file.originalname);
-    const key = `${req.fileName}${fileExtension}`;
+    const key = `${randomUUID()}${fileExtension}`;
     done(null, key);
   }
 });

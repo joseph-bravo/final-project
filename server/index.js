@@ -8,7 +8,6 @@ const kebabCase = require('lodash/kebabCase');
 const errorMiddleware = require('./error-middleware');
 const { upload, download } = require('./s3-middleware');
 const ClientError = require('./client-error');
-const middlewareGenUUID = require('./uuid-to-req-middleware');
 const authMiddleware = require('./auth-middleware');
 const postSchema = require('../shared/post-schema');
 
@@ -303,7 +302,6 @@ app.get('/api/posts/download/:id', (req, res, next) => {
 app.post(
   '/api/upload',
   authMiddleware,
-  middlewareGenUUID,
   upload.fields([
     { name: 'sar', maxCount: 1 },
     { name: 'thumbnail', maxCount: 1 }
