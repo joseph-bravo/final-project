@@ -6,48 +6,37 @@ drop schema "public" cascade;
 
 create schema "public";
 
-create table "posts" (
-  "postId" serial primary key not null,
-  "userId" integer not null,
-  "createdAt" timestamptz not null default now(),
-  "title" text not null,
-  "description" text
+CREATE TABLE "posts" (
+  "postId" SERIAL PRIMARY KEY NOT NULL,
+  "userId" integer NOT NULL,
+  "createdAt" timestamptz NOT NULL DEFAULT (now()),
+  "title" text NOT NULL,
+  "description" text,
+  "fileObjectKey" text NOT NULL,
+  "fileThumbnailUrl" text NOT NULL,
+  "filePropsName" text NOT NULL,
+  "filePropsSound" integer NOT NULL,
+  "filePropsLayerCount" integer NOT NULL
 );
 
-create table "files" (
-  "fileId" serial primary key not null,
-  "postId" integer not null,
-  "fileObjectKey" text not null,
-  "previewImagePath" text not null,
-  "filePropsName" text,
-  "filePropsSound" integer,
-  "filePropsLayerCount" integer
+CREATE TABLE "users" (
+  "userId" SERIAL UNIQUE PRIMARY KEY NOT NULL,
+  "username" text UNIQUE NOT NULL,
+  "hashedPassword" text UNIQUE NOT NULL,
+  "createdAt" timestamptz NOT NULL DEFAULT (now())
 );
 
-create table "users" (
-  "userId" serial unique primary key not null,
-  "username" text unique not null,
-  "hashedPassword" text unique not null,
-  "createdAt" timestamptz not null default now()
+CREATE TABLE "tags" (
+  "tagName" text PRIMARY KEY NOT NULL
 );
 
-create table "tags" (
-  "tagName" text primary key not null
+CREATE TABLE "taggings" (
+  "tagName" text NOT NULL,
+  "postId" integer NOT NULL
 );
 
-create table "taggings" (
-  "tagName" text not null,
-  "postId" integer not null
-);
+ALTER TABLE "posts" ADD FOREIGN KEY ("userId") REFERENCES "users" ("userId") on delete cascade;
 
-alter table "posts"
-  add foreign key ("userId") references "users" ("userId");
+ALTER TABLE "taggings" ADD FOREIGN KEY ("tagName") REFERENCES "tags" ("tagName") on delete cascade;
 
-alter table "files"
-  add foreign key ("postId") references "posts" ("postId") on delete cascade;
-
-alter table "taggings"
-  add foreign key ("tagName") references "tags" ("tagName") on delete cascade;
-
-alter table "taggings"
-  add foreign key ("postId") references "posts" ("postId") on delete cascade;
+ALTER TABLE "taggings" ADD FOREIGN KEY ("postId") REFERENCES "posts" ("postId") on delete cascade;
