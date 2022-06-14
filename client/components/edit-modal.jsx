@@ -34,7 +34,7 @@ export default class EditModal extends React.Component {
         const tags = rawTags.join(' ');
         this.setState({ title, description, tags, previewImagePath });
       })
-      .catch(this.context.setEditing(null));
+      .catch(() => this.context.setEditing(null));
   }
 
   handleChange(event) {

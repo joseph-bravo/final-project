@@ -25,21 +25,17 @@ export default function SymbolArtCard(props) {
     return;
   }
 
-  let {
+  const {
     postId,
     title,
     description,
     previewImagePath,
-    tags,
+    tags = [],
     username,
     userId,
     filePropsSound,
     filePropsName
   } = props.symbolArt;
-
-  if (!tags) {
-    tags = [];
-  }
 
   const downloadLink = apiDownloadPostFromId(postId);
   const postLink = pathPostFromId(postId);

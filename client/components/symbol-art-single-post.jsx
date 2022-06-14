@@ -28,22 +28,18 @@ export default function SinglePostSymbolArt(props) {
     );
   }
 
-  let {
+  const {
     postId,
     title,
     description,
     previewImagePath,
-    tags,
+    tags = [],
     username,
     userId,
     filePropsSound,
     filePropsName,
     filePropsLayerCount
   } = props.symbolArt;
-
-  if (!tags) {
-    tags = [];
-  }
 
   const downloadLink = apiDownloadPostFromId(postId);
   const userLink = pathUserFromUserId(userId);
