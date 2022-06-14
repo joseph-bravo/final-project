@@ -33,7 +33,7 @@ export default class SearchBar extends React.Component {
     const searchParams = new URLSearchParams('');
     searchParams.append('q', q);
     searchParams.append('cols', cols);
-    fetch('/api/posts/search?' + searchParams.toString())
+    fetch('/api/catalog/search?' + searchParams.toString())
       .then(res => res.json())
       .then(res => this.props.setCatalog(res, q.trim()));
   }
@@ -93,7 +93,7 @@ export default class SearchBar extends React.Component {
                 </button>
               </div>
             </div>
-            <div className="dropdown-end dropdown z-10">
+            <div className="dropdown dropdown-end z-10">
               <label tabIndex="0" className="btn m-1">
                 options
               </label>

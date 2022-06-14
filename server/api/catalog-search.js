@@ -1,7 +1,7 @@
 const ClientError = require('../lib/client-error');
 const db = require('../lib/db');
 
-module.exports = function postsSearchId(req, res, next) {
+module.exports = function catalogSearchId(req, res, next) {
   const { q: query, cols: columns } = req.query;
   if (!query) {
     throw new ClientError(

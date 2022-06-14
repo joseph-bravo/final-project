@@ -25,21 +25,20 @@ app.use(express.json());
 
 /** Get all post data.
  */
-app.get('/api/catalog', api.catalog);
+app.get('/api/catalog', api.catalog.view);
 
-/** Get all post from a certain user.
- */
-app.get('/api/catalog/user/:id', api.catalogUserId);
-
-/** Queries DB for single post and its details, like /api/catalog/ but single.
- */
-app.get('/api/posts/view/:id', api.posts.viewId);
+/** Get all post from a certain user. */
+app.get('/api/catalog/user/:id', api.catalog.userId);
 
 /** Searches DB for posts matching the query details.
  * @QueryParameter q - text of the search query.
  * @QueryParameter cols - columns to apply search to.
  */
-app.get('/api/posts/search', api.posts.search);
+app.get('/api/catalog/search', api.catalog.search);
+
+/** Queries DB for single post and its details, like /api/catalog/ but single.
+ */
+app.get('/api/posts/view/:id', api.posts.viewId);
 
 /* Redirects to a download of the SAR file given the ID of post.
  */
