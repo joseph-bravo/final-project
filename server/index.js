@@ -5,10 +5,10 @@ const pg = require('pg');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 const kebabCase = require('lodash/kebabCase');
-const errorMiddleware = require('./error-middleware');
-const { upload, download } = require('./s3-middleware');
-const ClientError = require('./client-error');
-const authMiddleware = require('./auth-middleware');
+const errorMiddleware = require('./lib/error-middleware');
+const { upload, download } = require('./lib/s3-middleware');
+const ClientError = require('./lib/client-error');
+const authMiddleware = require('./lib/auth-middleware');
 const postSchema = require('../shared/post-schema');
 
 const app = express();
@@ -25,7 +25,7 @@ const db = new pg.Pool({
 });
 
 if (process.env.NODE_ENV === 'development') {
-  app.use(require('./dev-middleware')(publicPath));
+  app.use(require('./lib/dev-middleware')(publicPath));
 }
 
 app.use(express.static(publicPath));
