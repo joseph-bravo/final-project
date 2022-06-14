@@ -2,6 +2,7 @@ import React from 'react';
 import { apiViewPostFromId } from '../lib/endpoints';
 import DaisyModal from './daisy-modal';
 import postSchema from '../../shared/post-schema';
+import AppContext from '../lib/app-context';
 
 const titleCharLimit = 25;
 const descriptionCharLimit = 75;
@@ -22,6 +23,9 @@ export default class EditModal extends React.Component {
   }
 
   componentDidMount() {
+    if (!this.props.editing) {
+      return;
+    }
     const apiPath = apiViewPostFromId(this.props.editing);
     fetch(apiPath)
       .then(res => res.json())
@@ -29,7 +33,8 @@ export default class EditModal extends React.Component {
         const { title, description, tags: rawTags, previewImagePath } = res;
         const tags = rawTags.join(' ');
         this.setState({ title, description, tags, previewImagePath });
-      });
+      })
+      .catch(this.context.setEditing(null));
   }
 
   handleChange(event) {
@@ -104,6 +109,7 @@ export default class EditModal extends React.Component {
     );
   }
 }
+EditModal.contextType = AppContext;
 
 function TextInput(props) {
   const { remainingCharacters, totalCharacters } = props;

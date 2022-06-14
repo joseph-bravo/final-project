@@ -17,7 +17,7 @@ export default class App extends React.Component {
       userToken: null,
       username: null,
       userId: null,
-      editing: 1
+      editing: null
     };
     this.playSound = this.playSound.bind(this);
     this.sounds = sounds.map(sound => {
