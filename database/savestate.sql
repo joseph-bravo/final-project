@@ -181,6 +181,13 @@ ALTER TABLE ONLY public.users ALTER COLUMN "userId" SET DEFAULT nextval('public.
 --
 
 COPY public.files ("fileId", "postId", "fileObjectKey", "previewImagePath", "filePropsName", "filePropsSound", "filePropsLayerCount") FROM stdin;
+1	1	51c5f45c-d517-4d15-8b3e-6acdb0ec6587.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/51c5f45c-d517-4d15-8b3e-6acdb0ec6587.png	ぺこら困り＠プラウ	5	189
+2	2	421d6158-e74d-4814-b200-096ac4508ef9.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/421d6158-e74d-4814-b200-096ac4508ef9.png	イオ@照れ	1	216
+3	3	df1944cd-855f-4a4b-9e9a-c96c461ec92b.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/df1944cd-855f-4a4b-9e9a-c96c461ec92b.png	Symbol Art	5	34
+4	4	c7aed3d4-4faa-4d45-bd5a-860579222dcb.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/c7aed3d4-4faa-4d45-bd5a-860579222dcb.png	？？？ @LanXwar	8	78
+5	5	f9428dc1-44fb-4785-a11a-50bd0b49f421.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/f9428dc1-44fb-4785-a11a-50bd0b49f421.png	sexycast	9	93
+6	6	e379960f-4b89-4f72-a203-dcf260f560be.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/e379960f-4b89-4f72-a203-dcf260f560be.png	@Pikaboi 2021-02-21	11	78
+7	7	8bdd08d2-d8c0-4d9a-8854-56a9c5f81560.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/8bdd08d2-d8c0-4d9a-8854-56a9c5f81560.png	拡大鳥@あきしゃけ	3	66
 \.
 
 
@@ -189,6 +196,13 @@ COPY public.files ("fileId", "postId", "fileObjectKey", "previewImagePath", "fil
 --
 
 COPY public.posts ("postId", "userId", "createdAt", title, description) FROM stdin;
+1	1	2022-06-14 18:42:20.374977+00	aaaa peko!!!	A lil shy rabbit
+2	1	2022-06-14 18:42:52.205963+00	best girl Io	You're making me blush, boss!
+3	2	2022-06-14 18:43:10.203077+00	MAN	
+4	2	2022-06-14 18:43:23.205271+00	???	huh???
+5	2	2022-06-14 18:43:47.217741+00	Hot Single CASTs	Why yes, I do play CAST.
+6	3	2022-06-14 18:44:23.278728+00	Rappy my Beloved	My one and only rappy.. kyu kyu~
+7	3	2022-06-14 18:44:41.775871+00	Rappy Stare...	jiiiiiiii~~~
 \.
 
 
@@ -197,6 +211,20 @@ COPY public.posts ("postId", "userId", "createdAt", title, description) FROM std
 --
 
 COPY public.taggings ("tagName", "postId") FROM stdin;
+hololive	1
+peko	1
+pso2	2
+npc	2
+io	2
+???	4
+casts	5
+pso2	5
+meme	5
+pso2	6
+rappy	6
+meme	6
+rappy	7
+pso2	7
 \.
 
 
@@ -205,6 +233,15 @@ COPY public.taggings ("tagName", "postId") FROM stdin;
 --
 
 COPY public.tags ("tagName") FROM stdin;
+hololive
+peko
+pso2
+npc
+io
+???
+casts
+meme
+rappy
 \.
 
 
@@ -213,8 +250,9 @@ COPY public.tags ("tagName") FROM stdin;
 --
 
 COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin;
-1	anonymous	fakepassword	2022-06-14 18:30:05.662215+00
-3	username	$argon2i$v=19$m=4096,t=3,p=1$koSwLtIHUf9hk9zmJ3UlCA$NJ1Ge0pAiV17LFmcGqXvqnDwncDeWI7goShu0sGENZA	2022-06-14 18:33:57.579215+00
+1	anonymous	$argon2i$v=19$m=4096,t=3,p=1$koSwLtIHUf9hk9zmJ3UlCA$NJ1Ge0pAiV17LFmcGqXvqnDwncDeWI7goShu0sGENZA	2022-06-14 18:34:31.774704+00
+2	baba	$argon2i$v=19$m=4096,t=3,p=1$XH3OwuRstOZ8qcziYvR0mg$mJHl4VzRpXLk62Srk44tg9ULZ/29H/NXrxbRShR+T6c	2022-06-14 18:42:57.455559+00
+3	rappy	$argon2i$v=19$m=4096,t=3,p=1$oKSZv0DITx0yYzFqZXYF2w$n2CpgbW49im3iq8Kt11mRLT+6zddnF1J8XK14w6g+aw	2022-06-14 18:43:56.258695+00
 \.
 
 
@@ -222,14 +260,14 @@ COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin
 -- Name: files_fileId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."files_fileId_seq"', 1, false);
+SELECT pg_catalog.setval('public."files_fileId_seq"', 7, true);
 
 
 --
 -- Name: posts_postId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."posts_postId_seq"', 1, false);
+SELECT pg_catalog.setval('public."posts_postId_seq"', 7, true);
 
 
 --
