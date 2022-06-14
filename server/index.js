@@ -4,6 +4,7 @@ const express = require('express');
 const pg = require('pg');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const kebabCase = require('lodash/kebabCase');
 const errorMiddleware = require('./error-middleware');
 const { upload, download } = require('./s3-middleware');
 const ClientError = require('./client-error');
@@ -290,7 +291,7 @@ app.get('/api/posts/download/:id', (req, res, next) => {
         res.status(404).json({ error: `unable to find entry with id: ${id}` });
       }
       const [{ fileObjectKey, title }] = reSQL.rows;
-      download(fileObjectKey, `${title}.sar`).then(downloadURL => {
+      download(fileObjectKey, `${kebabCase(title)}.sar`).then(downloadURL => {
         res.redirect(downloadURL);
       });
     });
