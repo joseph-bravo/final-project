@@ -2,11 +2,11 @@ const ClientError = require('../lib/client-error');
 const db = require('../lib/db');
 
 module.exports = function catalogUserId(req, res, next) {
-  const { userId } = req.params;
-  if (Number.isNaN(Number(userId))) {
+  const { id } = req.params;
+  if (Number.isNaN(Number(id))) {
     throw new ClientError(400, 'please provide a valid post ID (number)');
   }
-  if (!(userId >= 1) || !(userId <= 2147483647)) {
+  if (!(id >= 1) || !(id <= 2147483647)) {
     throw new ClientError(400, 'integer out of bounds');
   }
   const sql = `/* SQL */
@@ -21,10 +21,10 @@ module.exports = function catalogUserId(req, res, next) {
         "title", "description", "username",
         "fileObjectKey", "fileThumbnailUrl",
         "filePropsName", "filePropsSound", "filePropsLayerCount",
-        "postId", "userId", "createdAt", "tags"
+        "postId", "userId", "p"."createdAt", "tags"
       from "posts" as "p"
       join "users" using ("userId")
-      join "tag_arrays" using ("postId")
+      left join "tag_arrays" using ("postId")
       order by "p"."createdAt" desc
     ), "jsonify" as (
       select json_agg("formatted_posts".*), "users"."userId"
@@ -41,10 +41,10 @@ module.exports = function catalogUserId(req, res, next) {
     left join "jsonify" using ("userId")
     where "userId" = $1;
   `;
-  db.query(sql, [userId])
+  db.query(sql, [id])
     .then(({ rows: [user] }) => {
       if (!user) {
-        throw new ClientError(404, `unable to find user with id: ${userId}`);
+        throw new ClientError(404, `unable to find user with id: ${id}`);
       }
       res.json(user);
     })

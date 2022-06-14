@@ -53,7 +53,8 @@ class CatalogPage extends React.Component {
             username: res.username,
             loading: false
           });
-        });
+        })
+        .catch(console.error);
     } else {
       fetch('/api/catalog')
         .then(res => res.json())

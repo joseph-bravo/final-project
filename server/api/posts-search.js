@@ -87,14 +87,13 @@ module.exports = function postsSearchId(req, res, next) {
       "title", "description", "username",
       "fileObjectKey", "fileThumbnailUrl",
       "filePropsName", "filePropsSound", "filePropsLayerCount",
-      "postId", "userId", "createdAt", "tag_arrays"."tags", "ranks"
+      "postId", "userId", "posts"."createdAt", "tag_arrays"."tags", "ranks"
     from "search_ranking"
-    join "posts" using ("postId")
-    join "users" using ("userId")
-    join "tag_arrays" using ("postId")
+    left join "posts" using ("postId")
+    left join "users" using ("userId")
+    left join "tag_arrays" using ("postId")
     where "ranks" > 0.01
     order by "ranks" desc
-    limit 20
     ;
   `;
   db.query(sql, [query])

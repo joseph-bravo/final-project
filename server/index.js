@@ -27,6 +27,10 @@ app.use(express.json());
  */
 app.get('/api/catalog', api.catalog);
 
+/** Get all post from a certain user.
+ */
+app.get('/api/catalog/user/:id', api.catalogUserId);
+
 /** Queries DB for single post and its details, like /api/catalog/ but single.
  */
 app.get('/api/posts/view/:id', api.posts.viewId);
