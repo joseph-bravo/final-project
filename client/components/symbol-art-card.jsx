@@ -29,8 +29,8 @@ export default function SymbolArtCard(props) {
     postId,
     title,
     description,
-    previewImagePath,
-    tags = [],
+    fileThumbnailUrl,
+    tags,
     username,
     userId,
     filePropsSound,
@@ -47,7 +47,7 @@ export default function SymbolArtCard(props) {
         <Link to={postLink} className="transition-all hover:translate-y-0.5">
           <LazyLoadImage
             className="rounded-box aspect-[2/1] w-full select-none shadow-sm"
-            src={previewImagePath}
+            src={fileThumbnailUrl}
             placeholder={<PlaceholderImage />}
           />
         </Link>

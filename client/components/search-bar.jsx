@@ -33,9 +33,12 @@ export default class SearchBar extends React.Component {
     const searchParams = new URLSearchParams('');
     searchParams.append('q', q);
     searchParams.append('cols', cols);
-    fetch('/api/posts/search?' + searchParams.toString())
+    fetch('/api/catalog/search?' + searchParams.toString())
       .then(res => res.json())
-      .then(res => this.props.setCatalog(res, q.trim()));
+      .then(res => this.props.setCatalog(res, q.trim()))
+      .catch(err => {
+        console.error(err);
+      });
   }
 
   clearFormAndInitialize() {

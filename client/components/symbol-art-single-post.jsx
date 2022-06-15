@@ -32,8 +32,8 @@ export default function SinglePostSymbolArt(props) {
     postId,
     title,
     description,
-    previewImagePath,
-    tags = [],
+    fileThumbnailUrl,
+    tags,
     username,
     userId,
     filePropsSound,
@@ -53,7 +53,7 @@ export default function SinglePostSymbolArt(props) {
       <div className="flex flex-col gap-4">
         <LazyLoadImage
           className="rounded-box aspect-[2/1] w-full select-none"
-          src={previewImagePath}
+          src={fileThumbnailUrl}
           placeholder={<PlaceholderImage />}
         />
         <div className="flex justify-between">
@@ -92,10 +92,11 @@ export default function SinglePostSymbolArt(props) {
         <p className="text-lg">{description}</p>
       </div>
       <ul className="flex flex-wrap gap-2">
-        {tags.map((tag, id) => {
-          if (tag === '') return '';
-          return <Tag key={id} tag={tag} />;
-        })}
+        {tags &&
+          tags.map((tag, id) => {
+            if (tag === '') return '';
+            return <Tag key={id} tag={tag} />;
+          })}
       </ul>
       <div className="grid grid-cols-2 gap-4">
         <button

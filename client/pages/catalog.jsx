@@ -36,6 +36,7 @@ class CatalogPage extends React.Component {
   }
 
   initializeCatalog() {
+    this.setState({ loading: true });
     if (this.state.userid) {
       fetch(`/api/catalog/user/${this.state.userid}`)
         .then(res => res.json())
@@ -53,7 +54,8 @@ class CatalogPage extends React.Component {
             username: res.username,
             loading: false
           });
-        });
+        })
+        .catch(console.error);
     } else {
       fetch('/api/catalog')
         .then(res => res.json())

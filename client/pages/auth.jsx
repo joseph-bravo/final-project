@@ -44,8 +44,6 @@ export default class AuthPage extends React.Component {
             if (res.error === 'username already taken') {
               throw new Error('Username is already taken.');
             }
-            // eslint-disable-next-line no-console
-            console.log('new user details', res);
             this.successfulRegister = true;
             this.clearForm();
           })
