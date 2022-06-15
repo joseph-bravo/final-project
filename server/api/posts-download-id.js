@@ -25,7 +25,7 @@ module.exports = function postsDownloadId(req, res, next) {
   db.query(sql, [id])
     .then(reSQL => {
       if (!reSQL.rows) {
-        res.status(404).json({ error: `unable to find entry with id: ${id}` });
+        throw new ClientError(404, `unable to find entry with id: ${id}`);
       }
       const [{ fileObjectKey, title }] = reSQL.rows;
       download(fileObjectKey, `${kebabCase(title)}.sar`).then(downloadURL => {

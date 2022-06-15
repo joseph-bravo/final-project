@@ -3,9 +3,7 @@ const db = require('../lib/db');
 
 module.exports = function upload(req, res, next) {
   // * Anonymous post check
-  if (req.userId === null) {
-    req.userId = 1;
-  }
+  req.userId ??= 1;
 
   const { sar, thumbnail } = req.files;
 
