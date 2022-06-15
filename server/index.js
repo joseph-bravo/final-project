@@ -91,8 +91,8 @@ app.get('/posts/:id', (req, res, next) => {
       "filePropsName", "filePropsSound", "filePropsLayerCount",
       "postId", "userId", "p"."createdAt", "tags"
     from "posts" as "p"
-    join "tag_arrays" using ("postId")
-    join "users" using ("userId")
+    left join "tag_arrays" using ("postId")
+    left join "users" using ("userId")
     where "postId" = $1;
   `;
   db.query(sql, [id])
