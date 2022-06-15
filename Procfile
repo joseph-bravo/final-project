@@ -1,2 +1,2 @@
-release: npm run db:import
+release: npm run db:load
 web: npm start
