@@ -101,7 +101,7 @@ app.get('/posts/:id', (req, res, next) => {
         next();
         return;
       }
-      const { title, description, previewImagePath: image } = post;
+      const { title, description, fileThumbnailUrl: image } = post;
       res.render('index', {
         title,
         description,
