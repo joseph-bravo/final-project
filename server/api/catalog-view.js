@@ -19,7 +19,9 @@ module.exports = function catalog(req, res, next) {
     left join "tag_arrays" using ("postId")
     order by "p"."createdAt" desc;
   `;
-  db.query(sql).then(reSQL => {
-    res.json(reSQL.rows);
-  });
+  db.query(sql)
+    .then(reSQL => {
+      res.json(reSQL.rows);
+    })
+    .catch(err => next(err));
 };

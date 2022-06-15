@@ -31,5 +31,6 @@ module.exports = function postsDownloadId(req, res, next) {
       download(fileObjectKey, `${kebabCase(title)}.sar`).then(downloadURL => {
         res.redirect(downloadURL);
       });
-    });
+    })
+    .catch(err => next(err));
 };

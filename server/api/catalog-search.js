@@ -98,5 +98,5 @@ module.exports = function catalogSearchId(req, res, next) {
   `;
   db.query(sql, [query])
     .then(reSQL => res.json(reSQL.rows))
-    .catch(next);
+    .catch(err => next(err));
 };
