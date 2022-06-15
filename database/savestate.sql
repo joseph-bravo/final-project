@@ -21,45 +21,6 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: files; Type: TABLE; Schema: public; Owner: dev
---
-
-CREATE TABLE public.files (
-    "fileId" integer NOT NULL,
-    "postId" integer NOT NULL,
-    "fileObjectKey" text NOT NULL,
-    "previewImagePath" text NOT NULL,
-    "filePropsName" text,
-    "filePropsSound" integer,
-    "filePropsLayerCount" integer
-);
-
-
-ALTER TABLE public.files OWNER TO dev;
-
---
--- Name: files_fileId_seq; Type: SEQUENCE; Schema: public; Owner: dev
---
-
-CREATE SEQUENCE public."files_fileId_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public."files_fileId_seq" OWNER TO dev;
-
---
--- Name: files_fileId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dev
---
-
-ALTER SEQUENCE public."files_fileId_seq" OWNED BY public.files."fileId";
-
-
---
 -- Name: posts; Type: TABLE; Schema: public; Owner: dev
 --
 
@@ -68,7 +29,12 @@ CREATE TABLE public.posts (
     "userId" integer NOT NULL,
     "createdAt" timestamp with time zone DEFAULT now() NOT NULL,
     title text NOT NULL,
-    description text
+    description text,
+    "fileObjectKey" text NOT NULL,
+    "fileThumbnailUrl" text NOT NULL,
+    "filePropsName" text NOT NULL,
+    "filePropsSound" integer NOT NULL,
+    "filePropsLayerCount" integer NOT NULL
 );
 
 
@@ -156,13 +122,6 @@ ALTER SEQUENCE public."users_userId_seq" OWNED BY public.users."userId";
 
 
 --
--- Name: files fileId; Type: DEFAULT; Schema: public; Owner: dev
---
-
-ALTER TABLE ONLY public.files ALTER COLUMN "fileId" SET DEFAULT nextval('public."files_fileId_seq"'::regclass);
-
-
---
 -- Name: posts postId; Type: DEFAULT; Schema: public; Owner: dev
 --
 
@@ -177,32 +136,20 @@ ALTER TABLE ONLY public.users ALTER COLUMN "userId" SET DEFAULT nextval('public.
 
 
 --
--- Data for Name: files; Type: TABLE DATA; Schema: public; Owner: dev
---
-
-COPY public.files ("fileId", "postId", "fileObjectKey", "previewImagePath", "filePropsName", "filePropsSound", "filePropsLayerCount") FROM stdin;
-1	1	51c5f45c-d517-4d15-8b3e-6acdb0ec6587.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/51c5f45c-d517-4d15-8b3e-6acdb0ec6587.png	ぺこら困り＠プラウ	5	189
-2	2	421d6158-e74d-4814-b200-096ac4508ef9.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/421d6158-e74d-4814-b200-096ac4508ef9.png	イオ@照れ	1	216
-3	3	df1944cd-855f-4a4b-9e9a-c96c461ec92b.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/df1944cd-855f-4a4b-9e9a-c96c461ec92b.png	Symbol Art	5	34
-4	4	c7aed3d4-4faa-4d45-bd5a-860579222dcb.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/c7aed3d4-4faa-4d45-bd5a-860579222dcb.png	？？？ @LanXwar	8	78
-5	5	f9428dc1-44fb-4785-a11a-50bd0b49f421.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/f9428dc1-44fb-4785-a11a-50bd0b49f421.png	sexycast	9	93
-6	6	e379960f-4b89-4f72-a203-dcf260f560be.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/e379960f-4b89-4f72-a203-dcf260f560be.png	@Pikaboi 2021-02-21	11	78
-7	7	8bdd08d2-d8c0-4d9a-8854-56a9c5f81560.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/8bdd08d2-d8c0-4d9a-8854-56a9c5f81560.png	拡大鳥@あきしゃけ	3	66
-\.
-
-
---
 -- Data for Name: posts; Type: TABLE DATA; Schema: public; Owner: dev
 --
 
-COPY public.posts ("postId", "userId", "createdAt", title, description) FROM stdin;
-1	1	2022-06-14 18:42:20.374977+00	aaaa peko!!!	A lil shy rabbit
-2	1	2022-06-14 18:42:52.205963+00	best girl Io	You're making me blush, boss!
-3	2	2022-06-14 18:43:10.203077+00	MAN	
-4	2	2022-06-14 18:43:23.205271+00	???	huh???
-5	2	2022-06-14 18:43:47.217741+00	Hot Single CASTs	Why yes, I do play CAST.
-6	3	2022-06-14 18:44:23.278728+00	Rappy my Beloved	My one and only rappy.. kyu kyu~
-7	3	2022-06-14 18:44:41.775871+00	Rappy Stare...	jiiiiiiii~~~
+COPY public.posts ("postId", "userId", "createdAt", title, description, "fileObjectKey", "fileThumbnailUrl", "filePropsName", "filePropsSound", "filePropsLayerCount") FROM stdin;
+1	1	2022-06-14 23:39:06.629002+00	ARKS Trash Magazine	The Finest of News!	d0dbcbba-4d05-4af8-b1b5-1254cb31ce46.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/e8a0dbb2-9b5e-45fb-aed3-b40ab6d3d1b3.png	Mikuma Arks Trash	11	195
+2	1	2022-06-14 23:39:18.908157+00	ayo???		107dc3e0-204a-4e25-b331-07ef4227931a.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/bdf1f28b-9bd0-4495-9127-b35b09190e53.png	Untitled	8	26
+3	2	2022-06-14 23:39:54.862271+00	You Have No Luck	Nice try...	545b4b0f-e13e-432a-b83f-379b1a39faca.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/eed24dd3-8495-4ee4-bb5f-a3caba313244.png	ドゥモニとラボバトル	2	225
+4	2	2022-06-14 23:40:09.377691+00	Peko Nervous	aaaaa!!	16fcf45f-2a9d-498f-b57a-b4fa75b1b235.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/9a4af496-94e0-4a9b-8bce-8c213345e473.png	ぺこら困り＠プラウ	5	189
+5	3	2022-06-14 23:40:41.480297+00	Rappy Stare	jiiiiii~~~	4d6692a9-be57-42b4-8540-1b21e9c94ff4.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/42ed6abb-5817-4bd5-a217-28e901762646.png	拡大鳥@あきしゃけ	3	66
+6	3	2022-06-14 23:40:53.958472+00	Rappy Scam		1462c44a-bb9f-4b54-a48c-4cde45a4548c.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/461ec892-ca1b-43f3-998a-5de5ea74f8e3.png	Oh your rich?	0	47
+7	3	2022-06-14 23:41:19.43717+00	Rappy My Beloved	My one and only~	56b022d6-00e7-4990-8480-df1c8b48d365.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/b697c1b3-b6e9-4003-ad1f-8deea946642a.png	@Pikaboi 2021-02-21	11	78
+8	2	2022-06-14 23:41:44.621738+00	???	???	72c44ec3-8aa8-441e-bba2-46002ac9fd25.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/d2283cc0-bac1-4728-b10c-0553af7c291b.png	？？？ @LanXwar	8	78
+9	2	2022-06-14 23:42:13.555041+00	Tired Quna	Too much work...	cd01f7b8-2b14-4984-b10c-2d9c7f97b574.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/46257140-4936-4533-8188-61046dc4e680.png	クーナ(床)@しゃけ	5	208
+10	1	2022-06-14 23:42:38.364919+00	shrimp	yeaaaa!	b40c089f-a220-4534-b67c-b11e72a2c1f2.sar	https://symbol-art-vault.s3.us-west-1.amazonaws.com/15f6d619-13bd-43c9-826d-a7ebbdb9e8ce.png	Untitled	11	208
 \.
 
 
@@ -211,20 +158,23 @@ COPY public.posts ("postId", "userId", "createdAt", title, description) FROM std
 --
 
 COPY public.taggings ("tagName", "postId") FROM stdin;
-hololive	1
-peko	1
-pso2	2
-npc	2
-io	2
-???	4
-casts	5
-pso2	5
-meme	5
-pso2	6
+pso2	1
+arkstrash	1
+emoji	2
+dudu	3
+pso2	3
+affix	3
+hololive	4
+vtuber	4
+rappy	5
 rappy	6
-meme	6
+meme	7
 rappy	7
-pso2	7
+???	8
+quna	9
+npc	9
+pso2	9
+oracle	9
 \.
 
 
@@ -233,15 +183,19 @@ pso2	7
 --
 
 COPY public.tags ("tagName") FROM stdin;
-hololive
-peko
 pso2
-npc
-io
-???
-casts
-meme
+arkstrash
+emoji
+dudu
+affix
+hololive
+vtuber
 rappy
+meme
+???
+quna
+npc
+oracle
 \.
 
 
@@ -250,24 +204,17 @@ rappy
 --
 
 COPY public.users ("userId", username, "hashedPassword", "createdAt") FROM stdin;
-1	anonymous	$argon2i$v=19$m=4096,t=3,p=1$koSwLtIHUf9hk9zmJ3UlCA$NJ1Ge0pAiV17LFmcGqXvqnDwncDeWI7goShu0sGENZA	2022-06-14 18:34:31.774704+00
-2	baba	$argon2i$v=19$m=4096,t=3,p=1$XH3OwuRstOZ8qcziYvR0mg$mJHl4VzRpXLk62Srk44tg9ULZ/29H/NXrxbRShR+T6c	2022-06-14 18:42:57.455559+00
-3	rappy	$argon2i$v=19$m=4096,t=3,p=1$oKSZv0DITx0yYzFqZXYF2w$n2CpgbW49im3iq8Kt11mRLT+6zddnF1J8XK14w6g+aw	2022-06-14 18:43:56.258695+00
+1	anonymous	$argon2i$v=19$m=4096,t=3,p=1$koSwLtIHUf9hk9zmJ3UlCA$NJ1Ge0pAiV17LFmcGqXvqnDwncDeWI7goShu0sGENZA	2022-06-14 23:38:25.354135+00
+2	bababooey	$argon2i$v=19$m=4096,t=3,p=1$tKjMT/3RJFjOdLo8PTDwQQ$aqWA/Efa8eEp6DiUygegfscPTmmtxX4WkDKSU/4NJyo	2022-06-14 23:39:25.531539+00
+3	rappy	$argon2i$v=19$m=4096,t=3,p=1$sg86EjTzLvB4cekH4Y2jAw$7PFwED9LiLVFlS03KaeSWGVAs6DxEWnqRGt3JQuPhxY	2022-06-14 23:40:21.115004+00
 \.
-
-
---
--- Name: files_fileId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
---
-
-SELECT pg_catalog.setval('public."files_fileId_seq"', 7, true);
 
 
 --
 -- Name: posts_postId_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public."posts_postId_seq"', 7, true);
+SELECT pg_catalog.setval('public."posts_postId_seq"', 10, true);
 
 
 --
@@ -275,14 +222,6 @@ SELECT pg_catalog.setval('public."posts_postId_seq"', 7, true);
 --
 
 SELECT pg_catalog.setval('public."users_userId_seq"', 3, true);
-
-
---
--- Name: files files_pkey; Type: CONSTRAINT; Schema: public; Owner: dev
---
-
-ALTER TABLE ONLY public.files
-    ADD CONSTRAINT files_pkey PRIMARY KEY ("fileId");
 
 
 --
@@ -326,19 +265,11 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: files files_postId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dev
---
-
-ALTER TABLE ONLY public.files
-    ADD CONSTRAINT "files_postId_fkey" FOREIGN KEY ("postId") REFERENCES public.posts("postId") ON DELETE CASCADE;
-
-
---
 -- Name: posts posts_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dev
 --
 
 ALTER TABLE ONLY public.posts
-    ADD CONSTRAINT "posts_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users("userId");
+    ADD CONSTRAINT "posts_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users("userId") ON DELETE CASCADE;
 
 
 --
