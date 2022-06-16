@@ -28,7 +28,9 @@ module.exports = function postsDownloadId(req, res, next) {
         throw new ClientError(404, `unable to find entry with id: ${id}`);
       }
       const [{ fileObjectKey, title }] = reSQL.rows;
-      download(fileObjectKey, `${kebabCase(title)}.sar`).then(downloadURL => {
+      const titleFiltered = title.match(/[\w\d]/g);
+      const filename = titleFiltered ? kebabCase(titleFiltered.join('')) : 'symbol-file';
+      download(fileObjectKey, `${filename}.sar`).then(downloadURL => {
         res.redirect(downloadURL);
       });
     })
