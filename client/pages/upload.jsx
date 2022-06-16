@@ -1,5 +1,5 @@
 import React from 'react';
-import Navigate from '../components/utils/navigate';
+import { Navigate } from 'react-router-dom';
 import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
 import AppContext from '../lib/app-context';

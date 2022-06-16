@@ -13,10 +13,8 @@ import Tag from './tag';
 import PlaceholderImage from './placeholder-image';
 
 /**
- *
  * @param {Object} props
- * @param {Object} props.symbolArt - Symbol Art data from fetch request.
- * @returns
+ * @property props.symbolArt - Symbol Art data from fetch request.
  */
 export default function SymbolArtCard(props) {
   const { playSound } = React.useContext(AppContext);
