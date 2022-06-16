@@ -8,10 +8,8 @@ import PlaceholderImage from './placeholder-image';
 import Tag from './tag';
 
 /**
- *
- * @param {Object} props
- * @param {Object} props.symbolArt - Symbol Art data from fetch request.
- * @returns
+ * @param {object} props
+ * @property props.symbolArt - Symbol Art data from fetch request.
  */
 export default function SinglePostSymbolArt(props) {
   const { playSound } = React.useContext(AppContext);
