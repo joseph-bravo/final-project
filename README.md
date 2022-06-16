@@ -8,10 +8,14 @@ Within _PSO2_, players can chat using special images known as _Symbol Arts_. The
 
 > ### This live app demo is intended for portfolio demonstration. All data is reset on a consistent schedule; your posts won't stick around.
 
+Demo credentials are available [here](docs/demo-credentials.md).
+
 
 # 📷 Preview
 
-> # [TODO]
+![Catalog Preview](https://user-images.githubusercontent.com/78003700/174192142-2c235232-ba3a-4151-949b-38851dbe16a4.gif)
+![Upload Form Preview](https://user-images.githubusercontent.com/78003700/174192609-2b7a9e1a-5abd-4914-87e2-378b14d2e127.gif)
+
 
 ---
 
@@ -72,10 +76,27 @@ Languages: HTML5 (Pug template engine), CSS, JavaScript (ES6)
 - NPM (v8.9.0 or higher)
 - PostgreSQL (v14 or higher)
 
-# 🧑‍💻 Development
+# 🧑‍💻 Development Setup
 
-> # [TODO]
+- Run `cp .env.example .env` for environmental variables.
+- Ensure a PostgreSQL Database is available and put its connection URL into `.env`.
+- Replace AWS `.env` variable values with corresponding target S3 Bucket and IAM user keys.
+- Change `TOKEN_SECRET` to something secure.
+- Run `npm i` to install dependencies.
+- Run `npm run db:import` to initialize database tables (⚠️ THIS DROPS THE CURRENT PUBLIC SCHEMA!!!).
+- Run `npm run dev` to spin up a development server.
+- Start developing! 📝
 
+## Deployment
+
+- Run `npm run build` and `npm start` to build and run the production server.
+
+## Helper Scripts
+
+- `npm run db:save` to create a `savestate.sql`
+- `npm run db:load` to drop current public schema and load from `savestate.sql`
+
+> #### Note: The current save state in the repo only applies to the demo's S3 bucket. You won't be able to use this.
 
 ---
 
