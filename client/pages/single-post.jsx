@@ -29,7 +29,8 @@ export default function SinglePostPage(props) {
           setSymbolArt(resBody);
         }
         setLoading(false);
-      });
+      })
+      .catch(err => console.error(err));
   }, [apiPath]);
 
   if (loading) return;

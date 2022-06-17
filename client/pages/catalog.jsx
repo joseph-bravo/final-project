@@ -3,6 +3,7 @@ import SymbolArtCard from '../components/symbol-art-card';
 import AppContext from '../lib/app-context';
 import SearchBar from '../components/search-bar';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import ErrorDisplay from '../components/error-display';
 
 class CatalogPage extends React.Component {
   constructor(props) {
@@ -12,7 +13,8 @@ class CatalogPage extends React.Component {
       showingMatchesFor: '',
       userid: null,
       username: null,
-      loading: true
+      loading: true,
+      errorMessage: null
     };
     this.setCatalog = this.setCatalog.bind(this);
     this.initializeCatalog = this.initializeCatalog.bind(this);
@@ -36,31 +38,50 @@ class CatalogPage extends React.Component {
   }
 
   initializeCatalog() {
-    this.setState({ loading: true });
+    this.setState({ loading: true, errorMessage: null });
     if (this.state.userid) {
       fetch(`/api/catalog/user/${this.state.userid}`)
-        .then(res => res.json())
         .then(res => {
-          if (Object.keys(res)[0] === 'error') {
+          return Promise.all([res, res.json()]);
+        })
+        .then(tuple => {
+          const [res, resBody] = tuple;
+          if (!res.ok) {
             this.setState({
               currentlyViewing: [],
               username: null,
-              loading: false
+              loading: false,
+              errorMessage: {
+                status: res.status,
+                message: resBody.error ? resBody.error : res.statusText
+              }
             });
             return;
           }
           this.setState({
-            currentlyViewing: res.posts ? res.posts : [],
-            username: res.username,
+            currentlyViewing: resBody.posts ? resBody.posts : [],
+            username: resBody.username,
             loading: false
           });
         })
         .catch(console.error);
     } else {
       fetch('/api/catalog')
-        .then(res => res.json())
         .then(res => {
-          this.setCatalog(res);
+          return Promise.all([res, res.json()]);
+        })
+        .then(tuple => {
+          const [res, resBody] = tuple;
+          if (!res.ok) {
+            this.setState({
+              errorMessage: {
+                status: res.status,
+                message: resBody.error ? resBody.error : res.statusText
+              }
+            });
+            return;
+          }
+          this.setCatalog(resBody);
         })
         .catch(console.error);
     }
@@ -71,12 +92,12 @@ class CatalogPage extends React.Component {
   }
 
   render() {
-    if (this.state.userid && !this.state.username && !this.state.loading) {
-      return (
-        <div className="alert alert-error justify-center text-3xl font-bold">
-          <h2>Unable to find user with ID ({this.state.userid})</h2>
-        </div>
-      );
+    if (this.state.loading) {
+      return <></>;
+    }
+
+    if (this.state.errorMessage && !this.state.loading) {
+      return <ErrorDisplay {...this.state.errorMessage} />;
     }
 
     return (
