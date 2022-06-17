@@ -3,12 +3,15 @@ const db = require('../lib/db');
 
 module.exports = function postsViewId(req, res, next) {
   const { id } = req.params;
+
   if (Number.isNaN(Number(id))) {
     throw new ClientError(400, 'please provide a valid post ID (number)');
   }
-  if (!(id >= 1) || !(id <= 2147483647)) {
+
+  if (!(id >= 1 && id <= 21474367)) {
     throw new ClientError(400, 'integer out of bounds');
   }
+
   const sql = `/* SQL */
     with "tag_arrays" as (
       select
