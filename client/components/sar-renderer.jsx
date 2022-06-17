@@ -2,6 +2,7 @@ import React from 'react';
 import * as PIXI from 'pixi.js';
 import { Sprite2d } from 'pixi-projection';
 import convertRGBtoHex from '../lib/rgb-to-hex';
+import { toast } from 'react-toastify';
 
 function renderSar(sar) {
   const promise = new Promise((resolve, reject) => {
@@ -89,9 +90,15 @@ export default class SarRenderToPng extends React.Component {
   }
 
   componentDidMount() {
-    renderSar(this.props.sar).then(pngBase64 => {
-      this.setState({ imageSrc: pngBase64 });
-    });
+    toast.promise(
+      renderSar(this.props.sar).then(pngBase64 => {
+        this.setState({ imageSrc: pngBase64 });
+      }),
+      {
+        pending: 'Rendering Symbol Art...',
+        error: 'Error! Render has failed...'
+      }
+    );
   }
 
   componentWillUnmount() {
@@ -103,9 +110,15 @@ export default class SarRenderToPng extends React.Component {
       this.setState({ imageSrc: '' });
       PIXI.utils.destroyTextureCache();
 
-      renderSar(this.props.sar).then(pngBase64 => {
-        this.setState({ imageSrc: pngBase64 });
-      });
+      toast.promise(
+        renderSar(this.props.sar).then(pngBase64 => {
+          this.setState({ imageSrc: pngBase64 });
+        }),
+        {
+          pending: 'Loading Symbol Art...',
+          error: 'Error! Unable to load file'
+        }
+      );
     }
   }
 

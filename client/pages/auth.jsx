@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import AppContext from '../lib/app-context';
 
 export default class AuthPage extends React.Component {
@@ -7,15 +8,11 @@ export default class AuthPage extends React.Component {
     super(props);
     this.state = {
       username: '',
-      password: '',
-      isErrorAlertOpen: false,
-      errorMessage: ''
+      password: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.clearForm = this.clearForm.bind(this);
-    this.openAlert = this.openAlert.bind(this);
-    this.closeAlert = this.closeAlert.bind(this);
   }
 
   componentDidMount() {
@@ -32,40 +29,63 @@ export default class AuthPage extends React.Component {
     const { action } = this.props;
     switch (action) {
       case 'sign-up':
-        fetch('/api/auth/sign-up', {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify({ username, password })
-        })
-          .then(res => res.json())
-          .then(res => {
-            if (res.error === 'username already taken') {
-              throw new Error('Username is already taken.');
-            }
-            this.successfulRegister = true;
-            this.clearForm();
+        toast.promise(
+          fetch('/api/auth/sign-up', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
           })
-          .catch(err => this.openAlert(err.message));
+            .then(res => res.json())
+            .then(res => {
+              if (res.error === 'username already taken') {
+                throw new Error('Username is already taken...');
+              }
+              this.successfulRegister = true;
+              this.clearForm();
+            }),
+          {
+            error: {
+              render({ data }) {
+                return data.message;
+              }
+            }
+          }
+        );
         break;
       case 'sign-in':
-        fetch('/api/auth/sign-in', {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify({ username, password })
-        })
-          .then(res => res.json())
-          .then(res => {
-            if (res.error === 'invalid login') {
-              throw new Error('invalid login!');
-            }
-            this.context.login(res.token);
-            this.successfulSignup = true;
+        toast.promise(
+          fetch('/api/auth/sign-in', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
           })
-          .catch(err => this.openAlert(err.message));
+            .then(res => res.json())
+            .then(res => {
+              if (res.error === 'invalid login') {
+                throw new Error('Invalid Login...');
+              }
+              this.context.login(res.token);
+              this.successfulSignup = true;
+              return res.user.username;
+            }),
+          {
+            pending: 'Logging in...',
+            success: {
+              render({ data }) {
+                return `Hello, ${data}!`;
+              }
+            },
+            error: {
+              render({ data }) {
+                return data.message;
+              }
+            }
+          }
+        );
         break;
     }
   }
@@ -151,12 +171,6 @@ export default class AuthPage extends React.Component {
             {primaryActionText}
           </button>
         </div>
-        {
-          // prettier-ignore
-          this.state.isErrorAlertOpen
-            ? <ErrorAlert errorMessage={this.state.errorMessage} closeAlert={this.closeAlert} />
-            : null
-        }
       </form>
     );
   }
@@ -182,35 +196,6 @@ function TextInput(props) {
           required={required}
           placeholder={placeholder}
         />
-      </div>
-    </div>
-  );
-}
-
-function ErrorAlert(props) {
-  const { closeAlert, errorMessage } = props;
-  return (
-    <div className="rounded-box flex items-center justify-between bg-error p-4 text-error-content">
-      <div className="flex gap-4">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 flex-shrink-0 stroke-current"
-          fill="none"
-          viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <h4>{errorMessage}</h4>
-      </div>
-
-      <div className="flex-none">
-        <button className="btn btn-ghost" onClick={closeAlert}>
-          <span className="material-icons">close</span>
-        </button>
       </div>
     </div>
   );

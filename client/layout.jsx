@@ -1,5 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/header';
 import EditModal from './components/edit-modal';
 import AppContext from './lib/app-context';
@@ -8,6 +10,12 @@ export default class Layout extends React.Component {
   render() {
     return (
       <>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={2500}
+          pauseOnHover={false}
+          pauseOnFocusLoss={false}
+        />
         <EditModal
           isOpen={this.context.editing}
           editing={this.context.editing}
