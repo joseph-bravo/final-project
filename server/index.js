@@ -75,6 +75,7 @@ app.get('/posts/:id', (req, res, next) => {
   const { id } = req.params;
   if (!(id >= 1) || !(id <= 2147483647)) {
     res.render('index');
+    return;
   }
   const sql = `/* SQL */
     with "tag_arrays" as (

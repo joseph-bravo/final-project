@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import SarRenderToPng from '../components/sar-renderer';
 import processSarBuffer from '../lib/sar-parse';
 import AppContext from '../lib/app-context';
@@ -19,7 +20,6 @@ export default class UploadPage extends React.Component {
       title: '',
       description: '',
       tags: '',
-      isErrorAlertOpen: false,
       goingBack: false
     };
 
@@ -29,7 +29,6 @@ export default class UploadPage extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.closeAlert = this.closeAlert.bind(this);
     this.fileLoad = this.fileLoad.bind(this);
     this.handleDrop = this.handleDrop.bind(this);
     this.resetForm = this.resetForm.bind(this);
@@ -59,8 +58,7 @@ export default class UploadPage extends React.Component {
       fileParsed: null,
       title: '',
       description: '',
-      tags: '',
-      isErrorAlertOpen: false
+      tags: ''
     });
   }
 
@@ -73,41 +71,49 @@ export default class UploadPage extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const imageSrc = this.imageRef.current.state.imageSrc;
-    fetch(imageSrc)
-      .then(res => res.blob())
-      .then(thumbnailBlob => {
-        const formData = new FormData();
-        const { soundEffect, layerCount, name } = this.state.fileParsed;
+    toast.promise(
+      fetch(imageSrc)
+        .then(res => res.blob())
+        .then(thumbnailBlob => {
+          const formData = new FormData();
+          const { soundEffect, layerCount, name } = this.state.fileParsed;
 
-        formData.append('title', this.state.title);
-        formData.append('description', this.state.description);
-        formData.append('tags', this.state.tags);
-        formData.append('filePropsSound', soundEffect);
-        formData.append('filePropsLayerCount', layerCount);
-        formData.append('filePropsName', name);
-        formData.append('sar', this.state.file);
-        formData.append('thumbnail', thumbnailBlob, 'thumbnail.png');
+          formData.append('title', this.state.title);
+          formData.append('description', this.state.description);
+          formData.append('tags', this.state.tags);
+          formData.append('filePropsSound', soundEffect);
+          formData.append('filePropsLayerCount', layerCount);
+          formData.append('filePropsName', name);
+          formData.append('sar', this.state.file);
+          formData.append('thumbnail', thumbnailBlob, 'thumbnail.png');
 
-        return fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'X-Access-Token': this.context.userToken
-              ? this.context.userToken
-              : ''
-          }
-        });
-      })
-      .then(res => res.json())
-      .then(({ rows: [postDetails] }) => {
-        this.resetForm();
-        this.setState({ goingBack: true });
-      })
-      .catch(console.error);
+          return fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Access-Token': this.context.userToken
+                ? this.context.userToken
+                : ''
+            }
+          });
+        })
+        .then(res => res.json())
+        .then(({ rows: [postDetails] }) => {
+          this.resetForm();
+          this.setState({ goingBack: true });
+        })
+        .catch(err => {
+          console.error(err);
+        }),
+      {
+        pending: 'Uploading...',
+        success: 'Upload Complete!',
+        error: 'Error Uploading File :('
+      }
+    );
   }
 
   handleFileChange(event) {
-    this.closeAlert();
     const file = event.target.files[0];
     if (!file) {
       return;
@@ -119,15 +125,18 @@ export default class UploadPage extends React.Component {
     if (!file) {
       return;
     }
-    file
-      .arrayBuffer()
-      .then(processSarBuffer)
-      .then(fileParsed => {
-        this.setState({ file, fileParsed, isErrorAlertOpen: false });
-      })
-      .catch(() => {
-        this.setState({ isErrorAlertOpen: true, file: null, fileParsed: null });
-      });
+
+    toast.promise(
+      file
+        .arrayBuffer()
+        .then(processSarBuffer)
+        .then(fileParsed => {
+          this.setState({ file, fileParsed });
+        }),
+      {
+        error: `Unable to parse ${file.name}`
+      }
+    );
   }
 
   handleChange(event) {
@@ -146,10 +155,6 @@ export default class UploadPage extends React.Component {
       }
     }
     this.setState({ [event.target.name]: event.target.value.trimStart() });
-  }
-
-  closeAlert() {
-    this.setState({ isErrorAlertOpen: false });
   }
 
   render() {
@@ -179,13 +184,6 @@ export default class UploadPage extends React.Component {
             />
           </label>
         </div>
-
-        {
-          // prettier-ignore
-          this.state.isErrorAlertOpen
-            ? <ErrorAlert closeAlert={this.closeAlert} />
-            : null
-        }
 
         {
           // prettier-ignore
@@ -282,35 +280,6 @@ function TextInput(props) {
         <label className="label">
           <span className="badge badge-ghost">{props.rules}</span>
         </label>
-      </div>
-    </div>
-  );
-}
-
-function ErrorAlert(props) {
-  const closeAlert = props.closeAlert;
-  return (
-    <div className="rounded-box flex items-center justify-between bg-error p-4 text-error-content">
-      <div className="flex gap-4">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 flex-shrink-0 stroke-current"
-          fill="none"
-          viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <h4>error! unable to load file.</h4>
-      </div>
-
-      <div className="flex-none">
-        <button className="btn btn-ghost" onClick={closeAlert}>
-          <span className="material-icons">close</span>
-        </button>
       </div>
     </div>
   );

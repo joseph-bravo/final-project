@@ -24,7 +24,7 @@ module.exports = function postsDownloadId(req, res, next) {
   // prettier-ignore
   db.query(sql, [id])
     .then(reSQL => {
-      if (!reSQL.rows) {
+      if (!reSQL.rows[0]) {
         throw new ClientError(404, `unable to find entry with id: ${id}`);
       }
       const [{ fileObjectKey, title }] = reSQL.rows;
