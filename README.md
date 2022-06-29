@@ -10,6 +10,7 @@ Within _PSO2_, players can chat using special images known as _Symbol Arts_. The
 
 Demo credentials are available [here](docs/demo-credentials.md).
 
+Need some `.sar` files to test the app? Download some [from this repo!](https://github.com/joseph-bravo/symbol-arts)
 
 # 📷 Preview
 
