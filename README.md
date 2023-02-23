@@ -1,12 +1,10 @@
+> # This repository has been archived. View [arks-moe/symbols](https://github.com/arks-moe/symbols) for a more up-to-date version. 
+
 # Symbol Art Vault
 
 ## A web application for [_Phantasy Star Online 2_](https://ngs.pso2.com) players who want to share their _Symbol Arts_ online. ✨
 
 Within _PSO2_, players can chat using special images known as _Symbol Arts_. These files are stored as `.sar` files within the game's `symbolarts` folder in the user's `Documents/SEGA/PSO2~` directory. However, all `.sar` files are not named, and due to the special file format, they don't have native previews that make them easy to manage and share. This application aims to tackle the difficult sharability of _Symbol Arts_ and give people a way to see Symbol Arts before downloading them and viewing them in-game.
-
-# [🚀 Open the live app demo!](https://symbol-art-vault.herokuapp.com/)
-
-> ### This live app demo is intended for portfolio demonstration. All data is reset on a consistent schedule; your posts won't stick around.
 
 Demo credentials are available [here](docs/demo-credentials.md).
 
