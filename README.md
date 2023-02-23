@@ -1,4 +1,4 @@
-> # This repository has been archived. View [arks-moe/symbols](https://github.com/arks-moe/symbols) for a more up-to-date version. 
+> # This repository has been archived. View [arks-moe/symbols](https://github.com/arks-moe/symbols) for a more up-to-date/usable version. 
 
 # Symbol Art Vault
 
